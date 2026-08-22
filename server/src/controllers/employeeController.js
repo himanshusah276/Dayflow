@@ -1,5 +1,6 @@
 import bcrypt from 'bcryptjs';
 import db from '../config/db.js';
+import { storageProvider } from '../services/storageService.js';
 
 export const getEmployees = (req, res) => {
   try {
@@ -275,59 +276,64 @@ export const createEmployee = (req, res) => {
     const assignedRole = role === 'hr_admin' ? 'hr_admin' : 'employee';
 
     // Insert user (pre-verified when created by HR Admin)
-    const userRes = db.prepare(`
-      INSERT INTO users (employee_id, email, password_hash, role, is_verified)
-      VALUES (?, ?, ?, ?, 1)
-    `).run(cleanEmpId, cleanEmail, pwdHash, assignedRole);
+    let userId;
+    const createTransaction = db.transaction(() => {
+      const userRes = db.prepare(`
+        INSERT INTO users (employee_id, email, password_hash, role, is_verified)
+        VALUES (?, ?, ?, ?, 1)
+      `).run(cleanEmpId, cleanEmail, pwdHash, assignedRole);
 
-    const userId = userRes.lastInsertRowid;
+      userId = userRes.lastInsertRowid;
 
-    // Insert profile
-    const avatar = `https://api.dicebear.com/7.x/avataaars/svg?seed=${cleanEmpId}`;
-    db.prepare(`
-      INSERT INTO employee_profiles (
-        user_id, first_name, last_name, avatar_url, phone,
-        department, designation, date_of_joining, employment_type,
-        status, reporting_manager, work_location
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'Active', ?, ?)
-    `).run(
-      userId, firstName, lastName, avatar, phone || '',
-      department, designation, dateOfJoining || new Date().toISOString().split('T')[0],
-      employmentType || 'Full-Time', reportingManager || 'HR Manager', workLocation || 'Headquarters (San Francisco)'
-    );
+      // Insert profile
+      const avatar = `https://api.dicebear.com/7.x/avataaars/svg?seed=${cleanEmpId}`;
+      db.prepare(`
+        INSERT INTO employee_profiles (
+          user_id, first_name, last_name, avatar_url, phone,
+          department, designation, date_of_joining, employment_type,
+          status, reporting_manager, work_location
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'Active', ?, ?)
+      `).run(
+        userId, firstName, lastName, avatar, phone || '',
+        department, designation, dateOfJoining || new Date().toISOString().split('T')[0],
+        employmentType || 'Full-Time', reportingManager || 'HR Manager', workLocation || 'Headquarters (San Francisco)'
+      );
 
-    // Insert leave balance
-    const currentYear = new Date().getFullYear();
-    db.prepare(`
-      INSERT INTO leave_balances (user_id, year, paid_leave_total, sick_leave_total, casual_leave_total)
-      VALUES (?, ?, 18, 10, 8)
-    `).run(userId, currentYear);
+      // Insert leave balance
+      const currentYear = new Date().getFullYear();
+      db.prepare(`
+        INSERT INTO leave_balances (user_id, year, paid_leave_total, sick_leave_total, casual_leave_total)
+        VALUES (?, ?, 18, 10, 8)
+      `).run(userId, currentYear);
 
-    // Insert salary structure
-    const basic = parseFloat(basicSalary) || 4500;
-    const hra = basic * 0.4;
-    const conveyance = 300;
-    const special = 500;
-    const gross = basic + hra + conveyance + special;
-    const pf = basic * 0.12;
-    const tax = gross * 0.12;
-    const ins = 150;
-    const deductions = pf + tax + ins;
-    const net = gross - deductions;
+      // Insert salary structure
+      const basic = parseFloat(basicSalary) || 4500;
+      const hra = basic * 0.4;
+      const conveyance = 300;
+      const special = 500;
+      const gross = basic + hra + conveyance + special;
+      const pf = basic * 0.12;
+      const tax = gross * 0.12;
+      const ins = 150;
+      const deductions = pf + tax + ins;
+      const net = gross - deductions;
 
-    db.prepare(`
-      INSERT INTO salary_structures (
-        user_id, basic_salary, hra, conveyance_allowance, special_allowance,
-        provident_fund, professional_tax, health_insurance,
-        gross_salary, total_deductions, net_salary
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `).run(userId, basic, hra, conveyance, special, pf, tax, ins, gross, deductions, net);
+      db.prepare(`
+        INSERT INTO salary_structures (
+          user_id, basic_salary, hra, conveyance_allowance, special_allowance,
+          provident_fund, professional_tax, health_insurance,
+          gross_salary, total_deductions, net_salary
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `).run(userId, basic, hra, conveyance, special, pf, tax, ins, gross, deductions, net);
 
-    // Welcome notification
-    db.prepare(`
-      INSERT INTO notifications (user_id, title, message, type)
-      VALUES (?, 'Welcome to Dayflow!', 'Your profile has been created by HR. You can now track attendance, view payroll, and apply for leaves.', 'system')
-    `).run(userId);
+      // Welcome notification
+      db.prepare(`
+        INSERT INTO notifications (user_id, title, message, type)
+        VALUES (?, 'Welcome to Dayflow!', 'Your profile has been created by HR. You can now track attendance, view payroll, and apply for leaves.', 'system')
+      `).run(userId);
+    });
+
+    createTransaction();
 
     return res.status(201).json({
       message: 'Employee created successfully.',
@@ -364,28 +370,84 @@ export const deleteEmployee = (req, res) => {
   }
 };
 
-export const uploadDocument = (req, res) => {
+export const uploadAvatar = async (req, res) => {
   try {
     const targetUserId = parseInt(req.params.id, 10);
-    const { title, docType, fileName, fileSize } = req.body;
+    const isHrAdmin = req.user.role === 'hr_admin';
+
+    if (!isHrAdmin && req.user.id !== targetUserId) {
+      return res.status(403).json({ error: 'Access denied. You can only update your own avatar.' });
+    }
+
+    if (!req.file) {
+      return res.status(400).json({ error: 'No image file uploaded.' });
+    }
+
+    const saved = await storageProvider.saveFile({
+      subfolder: 'avatars',
+      originalname: req.file.originalname,
+      buffer: req.file.buffer
+    });
+
+    db.prepare('UPDATE employee_profiles SET avatar_url = ?, updated_at = CURRENT_TIMESTAMP WHERE user_id = ?')
+      .run(saved.url, targetUserId);
+
+    return res.json({
+      message: 'Avatar uploaded and updated successfully.',
+      avatarUrl: saved.url
+    });
+  } catch (error) {
+    console.error('uploadAvatar error:', error);
+    return res.status(500).json({ error: error.message || 'Failed to upload avatar.' });
+  }
+};
+
+export const uploadDocument = async (req, res) => {
+  try {
+    const targetUserId = parseInt(req.params.id, 10);
+    const isHrAdmin = req.user.role === 'hr_admin';
+
+    if (!isHrAdmin && req.user.id !== targetUserId) {
+      return res.status(403).json({ error: 'Access denied. You can only upload documents for yourself.' });
+    }
+
+    let fileUrl = '/docs/document.pdf';
+    let fileName = 'document.pdf';
+    let fileSize = '1.2 MB';
+
+    if (req.file) {
+      const saved = await storageProvider.saveFile({
+        subfolder: 'documents',
+        originalname: req.file.originalname,
+        buffer: req.file.buffer
+      });
+      fileUrl = saved.url;
+      fileName = req.file.originalname;
+      fileSize = `${(saved.size / (1024 * 1024)).toFixed(1)} MB`;
+    } else if (req.body.fileName) {
+      fileName = req.body.fileName;
+      fileSize = req.body.fileSize || '1.4 MB';
+      fileUrl = `/docs/${fileName}`;
+    }
+
+    const { title, docType } = req.body;
 
     if (!title || !docType) {
       return res.status(400).json({ error: 'Document title and type are required.' });
     }
 
-    const fileUrl = `/docs/${fileName || 'sample_document.pdf'}`;
-
     const result = db.prepare(`
       INSERT INTO documents (user_id, title, doc_type, file_name, file_size, file_url)
       VALUES (?, ?, ?, ?, ?, ?)
-    `).run(targetUserId, title, docType, fileName || 'document.pdf', fileSize || '1.4 MB', fileUrl);
+    `).run(targetUserId, title, docType, fileName, fileSize, fileUrl);
 
     return res.status(201).json({
       message: 'Document uploaded successfully.',
-      documentId: result.lastInsertRowid
+      documentId: result.lastInsertRowid,
+      fileUrl
     });
   } catch (error) {
     console.error('uploadDocument error:', error);
-    return res.status(500).json({ error: 'Failed to upload document.' });
+    return res.status(500).json({ error: error.message || 'Failed to upload document.' });
   }
 };

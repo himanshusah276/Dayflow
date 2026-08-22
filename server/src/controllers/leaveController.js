@@ -1,4 +1,5 @@
 import db from '../config/db.js';
+import { sendLeaveStatusEmail } from '../services/emailService.js';
 
 // Calculate days between two date strings (inclusive)
 function calculateDays(startDate, endDate) {
@@ -175,7 +176,7 @@ export const getAllLeaveRequests = (req, res) => {
   }
 };
 
-export const reviewLeaveRequest = (req, res) => {
+export const reviewLeaveRequest = async (req, res) => {
   try {
     const requestId = parseInt(req.params.id, 10);
     const { status, adminRemark } = req.body;
@@ -185,7 +186,14 @@ export const reviewLeaveRequest = (req, res) => {
       return res.status(400).json({ error: 'Status must be either Approved or Rejected.' });
     }
 
-    const request = db.prepare('SELECT * FROM leave_requests WHERE id = ?').get(requestId);
+    const request = db.prepare(`
+      SELECT lr.*, u.email, p.first_name, p.last_name
+      FROM leave_requests lr
+      JOIN users u ON lr.user_id = u.id
+      JOIN employee_profiles p ON u.id = p.user_id
+      WHERE lr.id = ?
+    `).get(requestId);
+
     if (!request) {
       return res.status(404).json({ error: 'Leave request not found.' });
     }
@@ -260,6 +268,21 @@ export const reviewLeaveRequest = (req, res) => {
     });
 
     reviewTransaction();
+
+    // Send email notification asynchronously
+    try {
+      sendLeaveStatusEmail({
+        to: request.email,
+        name: request.first_name,
+        leaveType: request.leave_type,
+        status,
+        startDate: request.start_date,
+        endDate: request.end_date,
+        remark: adminRemark
+      }).catch(e => console.warn('Email notify error:', e.message));
+    } catch (e) {
+      console.warn('Email dispatch skipped:', e.message);
+    }
 
     const updated = db.prepare('SELECT * FROM leave_requests WHERE id = ?').get(requestId);
 
