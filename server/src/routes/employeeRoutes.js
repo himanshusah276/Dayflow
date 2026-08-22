@@ -5,10 +5,12 @@ import {
   updateProfile,
   createEmployee,
   deleteEmployee,
+  uploadAvatar,
   uploadDocument
 } from '../controllers/employeeController.js';
 import { authenticate } from '../middleware/auth.js';
 import { requireHRAdmin } from '../middleware/rbac.js';
+import { uploadAvatarMiddleware, uploadDocumentMiddleware } from '../services/storageService.js';
 
 const router = express.Router();
 
@@ -17,9 +19,12 @@ router.get('/', authenticate, getEmployees);
 router.get('/:id', authenticate, getEmployeeById);
 router.put('/:id', authenticate, updateProfile);
 
+// File uploads
+router.post('/:id/avatar', authenticate, uploadAvatarMiddleware, uploadAvatar);
+router.post('/:id/documents', authenticate, uploadDocumentMiddleware, uploadDocument);
+
 // Admin-only actions
 router.post('/', authenticate, requireHRAdmin, createEmployee);
 router.delete('/:id', authenticate, requireHRAdmin, deleteEmployee);
-router.post('/:id/documents', authenticate, uploadDocument);
 
 export default router;

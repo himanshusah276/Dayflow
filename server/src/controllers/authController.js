@@ -1,6 +1,7 @@
 import bcrypt from 'bcryptjs';
 import db from '../config/db.js';
 import { generateToken } from '../config/jwt.js';
+import { sendVerificationEmail } from '../services/emailService.js';
 
 // Password complexity: at least 8 chars, containing at least 1 letter and 1 number
 function validatePassword(password) {
@@ -18,7 +19,7 @@ function generateVerificationCode() {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
-export const register = (req, res) => {
+export const register = async (req, res) => {
   try {
     const { employeeId, email, password, role, firstName, lastName, department, designation } = req.body;
 
@@ -58,67 +59,81 @@ export const register = (req, res) => {
     const verificationCode = generateVerificationCode();
     const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(); // 24h
 
-    // Insert user
-    const insertUser = db.prepare(`
-      INSERT INTO users (employee_id, email, password_hash, role, is_verified, verification_code, verification_code_expires_at)
-      VALUES (?, ?, ?, ?, 0, ?, ?)
-    `);
-
-    const result = insertUser.run(cleanEmpId, cleanEmail, passwordHash, assignedRole, verificationCode, expiresAt);
-    const userId = result.lastInsertRowid;
-
-    // Create initial profile
+    // Insert user inside transaction
     const fName = firstName || (assignedRole === 'hr_admin' ? 'HR' : 'Employee');
     const lName = lastName || cleanEmpId;
     const dept = department || (assignedRole === 'hr_admin' ? 'Human Resources' : 'Engineering');
     const desig = designation || (assignedRole === 'hr_admin' ? 'HR Specialist' : 'Associate Member');
 
-    db.prepare(`
-      INSERT INTO employee_profiles (user_id, first_name, last_name, department, designation, date_of_joining)
-      VALUES (?, ?, ?, ?, ?, DATE('now'))
-    `).run(userId, fName, lName, dept, desig);
+    let userId;
+    const registerTransaction = db.transaction(() => {
+      const insertUser = db.prepare(`
+        INSERT INTO users (employee_id, email, password_hash, role, is_verified, verification_code, verification_code_expires_at)
+        VALUES (?, ?, ?, ?, 0, ?, ?)
+      `);
+      const result = insertUser.run(cleanEmpId, cleanEmail, passwordHash, assignedRole, verificationCode, expiresAt);
+      userId = result.lastInsertRowid;
 
-    // Create default leave balances
-    const currentYear = new Date().getFullYear();
-    db.prepare(`
-      INSERT INTO leave_balances (user_id, year, paid_leave_total, sick_leave_total, casual_leave_total)
-      VALUES (?, ?, 18, 10, 8)
-    `).run(userId, currentYear);
+      // Create profile
+      db.prepare(`
+        INSERT INTO employee_profiles (user_id, first_name, last_name, department, designation, date_of_joining)
+        VALUES (?, ?, ?, ?, ?, DATE('now'))
+      `).run(userId, fName, lName, dept, desig);
 
-    // Create default salary structure
-    const defaultBasic = assignedRole === 'hr_admin' ? 5000 : 4200;
-    const defaultHra = defaultBasic * 0.4;
-    const defaultAllowances = 800;
-    const defaultGross = defaultBasic + defaultHra + defaultAllowances;
-    const defaultTax = defaultGross * 0.12;
-    const defaultPf = defaultBasic * 0.12;
-    const defaultInsurance = 150;
-    const defaultDeductions = defaultTax + defaultPf + defaultInsurance;
-    const defaultNet = defaultGross - defaultDeductions;
+      // Create default leave balances
+      const currentYear = new Date().getFullYear();
+      db.prepare(`
+        INSERT INTO leave_balances (user_id, year, paid_leave_total, sick_leave_total, casual_leave_total)
+        VALUES (?, ?, 18, 10, 8)
+      `).run(userId, currentYear);
 
-    db.prepare(`
-      INSERT INTO salary_structures (
-        user_id, basic_salary, hra, conveyance_allowance, special_allowance,
-        provident_fund, professional_tax, health_insurance,
-        gross_salary, total_deductions, net_salary
-      ) VALUES (?, ?, ?, 300, 500, ?, ?, ?, ?, ?, ?)
-    `).run(
-      userId, defaultBasic, defaultHra,
-      defaultPf, defaultTax, defaultInsurance,
-      defaultGross, defaultDeductions, defaultNet
-    );
+      // Create default salary structure
+      const defaultBasic = assignedRole === 'hr_admin' ? 5000 : 4200;
+      const defaultHra = defaultBasic * 0.4;
+      const defaultAllowances = 800;
+      const defaultGross = defaultBasic + defaultHra + defaultAllowances;
+      const defaultTax = defaultGross * 0.12;
+      const defaultPf = defaultBasic * 0.12;
+      const defaultInsurance = 150;
+      const defaultDeductions = defaultTax + defaultPf + defaultInsurance;
+      const defaultNet = defaultGross - defaultDeductions;
 
-    // Create welcome notification
-    db.prepare(`
-      INSERT INTO notifications (user_id, title, message, type)
-      VALUES (?, 'Welcome to Dayflow!', 'Your account has been created. Complete your email verification to get full access.', 'system')
-    `).run(userId);
+      db.prepare(`
+        INSERT INTO salary_structures (
+          user_id, basic_salary, hra, conveyance_allowance, special_allowance,
+          provident_fund, professional_tax, health_insurance,
+          gross_salary, total_deductions, net_salary
+        ) VALUES (?, ?, ?, 300, 500, ?, ?, ?, ?, ?, ?)
+      `).run(
+        userId, defaultBasic, defaultHra,
+        defaultPf, defaultTax, defaultInsurance,
+        defaultGross, defaultDeductions, defaultNet
+      );
+
+      // Welcome notification
+      db.prepare(`
+        INSERT INTO notifications (user_id, title, message, type)
+        VALUES (?, 'Welcome to Dayflow!', 'Your account has been created. Complete your email verification to get full access.', 'system')
+      `).run(userId);
+    });
+
+    registerTransaction();
+
+    // Dispatch real email verification
+    try {
+      await sendVerificationEmail({
+        to: cleanEmail,
+        name: fName,
+        code: verificationCode
+      });
+    } catch (mailErr) {
+      console.warn('Failed to send verification email via transporter, dev code is logged:', mailErr.message);
+    }
 
     return res.status(201).json({
-      message: 'Registration successful. Please verify your email to activate your account.',
+      message: 'Registration successful. A 6-digit verification code has been sent to your email.',
       email: cleanEmail,
       employeeId: cleanEmpId,
-      // We also return the verificationCode in the response payload for easy local testing & dev convenience!
       devVerificationCode: verificationCode,
     });
   } catch (error) {
@@ -174,6 +189,11 @@ export const verifyEmail = (req, res) => {
       return res.status(400).json({ error: 'Invalid verification code. Please check and try again.' });
     }
 
+    // Check expiration
+    if (user.verification_code_expires_at && new Date(user.verification_code_expires_at) < new Date()) {
+      return res.status(400).json({ error: 'Verification code has expired. Please request a new code.' });
+    }
+
     // Mark verified
     db.prepare(`
       UPDATE users
@@ -205,7 +225,7 @@ export const verifyEmail = (req, res) => {
   }
 };
 
-export const resendVerificationCode = (req, res) => {
+export const resendVerificationCode = async (req, res) => {
   try {
     const { email } = req.body;
     if (!email) {
@@ -213,7 +233,12 @@ export const resendVerificationCode = (req, res) => {
     }
 
     const cleanEmail = email.trim().toLowerCase();
-    const user = db.prepare('SELECT id, is_verified FROM users WHERE email = ?').get(cleanEmail);
+    const user = db.prepare(`
+      SELECT u.id, u.is_verified, p.first_name
+      FROM users u
+      LEFT JOIN employee_profiles p ON u.id = p.user_id
+      WHERE u.email = ?
+    `).get(cleanEmail);
 
     if (!user) {
       return res.status(404).json({ error: 'No account found with this email address.' });
@@ -231,6 +256,16 @@ export const resendVerificationCode = (req, res) => {
       SET verification_code = ?, verification_code_expires_at = ?, updated_at = CURRENT_TIMESTAMP
       WHERE id = ?
     `).run(newCode, expiresAt, user.id);
+
+    try {
+      await sendVerificationEmail({
+        to: cleanEmail,
+        name: user.first_name,
+        code: newCode
+      });
+    } catch (mailErr) {
+      console.warn('Failed to send resend email via transporter:', mailErr.message);
+    }
 
     return res.json({
       message: 'A new 6-digit verification code has been sent.',

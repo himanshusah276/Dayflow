@@ -6,21 +6,30 @@ A production-grade, full-stack Human Resource Management System (HRMS) designed 
 
 ---
 
-## 🌟 Key Features
+## 🌟 Key Architecture & Highlights
 
-### 1. 🔐 Authentication & Role-Based Access Control (RBAC)
-- **Two Roles**:
-  - **Employee**: Self-service view of own attendance, profile, leave requests, and salary payslips.
+### 1. 🔐 Production Authentication & Role-Based Access Control (RBAC)
+- **Role Enforcement**:
+  - **Employee**: Self-service view of own attendance, profile, leave requests, and salary payslips. Restricted from administrative endpoints (server returns `403 Forbidden`).
   - **Admin / HR Officer**: Company-wide roster management, attendance regularizations, leave approvals, salary structure modifications, monthly payroll execution, and analytics.
-- **Registration**: Employee ID, work email, password strength check (minimum 8 chars with mixed characters), and role selection.
-- **Email Verification**: 6-digit verification code system with resend capabilities and test helpers.
-- **Specific Error Feedback**: Clear validation messages for unregistered emails, invalid passwords, and unverified accounts.
-- **⚡ 1-Click Demo Accounts**: One-click quick login buttons for both HR Admin and Employee on the login page for rapid evaluation.
+- **Password Security**: Strong bcrypt password hashing and complexity validation (minimum 8 characters, alphanumeric).
+- **Email Verification Service**: Nodemailer integration with styled HTML email templates and 6-digit verification PINs (with local development fallback).
+- **Rate Limiting**: `express-rate-limit` protection on sensitive auth endpoints (`/login`, `/register`, `/resend-code`).
+- **⚡ 1-Click Demo Accounts**: Instant demo logins for both HR Admin and Employee for rapid evaluation.
 
-### 2. 📊 Role-Tailored Dashboards
+### 2. 🗄️ Relational Database & Migrations Engine
+- **SQLite with WAL Mode & Foreign Keys**: High-concurrency Write-Ahead Logging with cascading relations.
+- **Tracked SQL Migrations**: `001_initial_schema.sql` and `002_create_indexes.sql` tracked via `schema_migrations` table.
+- **Optimized Performance Indexes**: Fast indexed lookups on `users(email)`, `users(employee_id)`, `attendance_records(user_id, date)`, `leave_requests(user_id, status)`, `payroll_records(user_id, month, year)`, and `notifications(user_id, is_read)`.
+
+### 3. 📂 Storage Provider & File Upload Abstraction
+- Clean storage abstraction interface (`storageService.js`) with Multer disk driver (storing in `server/uploads/` and statically serving at `/uploads/`) engineered for effortless swapping with AWS S3 or Cloudinary.
+- Support for uploading custom employee avatar photos and certified PDF/image documents.
+
+### 4. 📊 Role-Tailored Dashboards
 - **Employee Dashboard**:
   - Live **Check-In / Check-Out tracker** with active stopwatch duration timer and status badges.
-  - Today's shift summary widget (Present, Late, Half-day, Leave).
+  - Today's shift summary widget (*Present*, *Late* past 09:30 AM, *Half-day* for < 4 hours).
   - Annual leave balance meters (Paid, Sick, Casual, Unpaid).
   - Quick-apply for leave modal.
   - Recent activity stream and company announcement board.
@@ -30,45 +39,37 @@ A production-grade, full-stack Human Resource Management System (HRMS) designed 
   - **1-Click Quick Approval Feed** for pending time-off requests.
   - Employee roster glance with direct navigation to management records.
 
-### 3. 👤 Comprehensive Employee Profiles
-- **4-Tab Profile Layout**:
-  1. *Personal & Contact*: Full name, DOB, gender, address, phone, emergency contact, avatar, and bio.
-  2. *Job & Organization*: Department, designation, date of joining, employment type, reporting manager, work location.
-  3. *Salary Structure*: Read-only breakdown of basic pay, HRA, allowances, statutory deductions, net take-home, and bank disbursal info.
-  4. *Documents*: ID proofs, contracts, tax forms (W-4), with upload capability.
-- **Strict Permissions**: Employees can edit contact details, address, emergency contact, bio, and avatar. Core employment terms, department, job title, and salary remain locked for HR Admin modification only.
-
-### 4. ⏱️ Attendance & Time-Tracking
+### 5. ⏱️ Attendance & Time-Tracking
 - **Check-In / Check-Out**: Real-time timestamps with automatic status determination (*Present* on time, *Late* after 09:30 AM, *Half-day* for < 4 hours).
 - **Daily & Weekly Views**: Toggle between daily detailed logs and weekly shift duration summaries.
 - **Monthly Filters**: Filter by month and year.
 - **HR Attendance Monitor**: Company-wide roster, date picker, department filters, and **Manual Attendance Regularization** modal.
 
-### 5. 🌴 Leave & Time-Off Management
+### 6. 🌴 Leave & Time-Off Management
 - **Leave Application**: Date range selector, half-day toggle, leave type selector (Paid, Sick, Casual, Unpaid), and reason textarea.
 - **Automated Balance Tracking**: Prevents over-drafting beyond available entitlement.
 - **HR Approval Workflow**: Filter by Pending/Approved/Rejected, 1-click Approve/Reject with optional custom review remarks.
-- **Instant Synchronization**: Approving a leave automatically updates the employee's balance, marks attendance as *On Leave*, and triggers in-app notification alerts.
+- **Instant Synchronization**: Approving a leave automatically updates the employee's balance, marks attendance as *On Leave*, dispatches an email notification, and triggers in-app notification alerts.
 
-### 6. 💰 Payroll & Compensation
+### 7. 💰 Payroll & Compensation
 - **Salary Structures**: Basic pay, HRA, Conveyance, Special, and Medical allowances + PF, Tax (TDS), and Health Insurance deductions.
+- **Strict Read-Only Enforcement**: Employees can only view their own structure; mutation endpoints strictly require `hr_admin`.
 - **Monthly Payroll Execution**: HR batch payroll generator that processes and generates official payslips for all active employees.
 - **Printable Payslip Voucher**: High-resolution, official salary slip template complete with company details, earnings vs deductions table, net pay, and authorized signatory line.
-- **CSV Exports**: One-click export of the company-wide payroll register and attendance logs.
+- **CSV Exports**: One-click streaming download of company-wide payroll registers and attendance logs.
 
-### 7. 🔔 In-App Notifications & Analytics
-- Notification center dropdown with live unread badge, real-time read status updates, and clickable links.
-- Interactive charts: Headcount by Department, Leave Types Breakdown, and Weekly Attendance Trends.
+### 8. 📋 Interactive OpenAPI / Swagger Documentation
+- Fully interactive API Reference available at `/api/docs` with live endpoint testing.
 
 ---
 
 ## 🛠️ Technology Stack
 
 - **Frontend**: React 18 (Vite) + Tailwind CSS + Lucide React + Recharts + React Router DOM + Canvas Confetti
-- **Backend**: Node.js + Express REST API
-- **Database**: SQLite (`better-sqlite3`) with relational foreign keys, transactions, WAL mode, and automated seed script
+- **Backend**: Node.js + Express REST API + Nodemailer + Multer + Express Rate Limit
+- **Database**: SQLite with relational foreign keys, WAL mode, migrations engine, and automated seed script
 - **Authentication**: JWT (JSON Web Tokens) + Bcrypt password hashing
-- **Orchestration**: Root npm scripts with `concurrently`
+- **Testing**: Automated End-to-End Test Suite with native assertions
 
 ---
 
@@ -88,23 +89,28 @@ A production-grade, full-stack Human Resource Management System (HRMS) designed 
 
 2. **Install all dependencies**:
    ```bash
-   # Install root, backend, and frontend packages
    npm install
    cd server && npm install && cd ..
    cd client && npm install && cd ..
    ```
 
-3. **Seed the database with rich realistic company data**:
+3. **Seed the database with realistic company data**:
    ```bash
    npm run seed
    ```
 
-4. **Run the full-stack application**:
+4. **Run the full test suite**:
+   ```bash
+   npm test
+   ```
+
+5. **Run the full-stack application**:
    ```bash
    npm run dev
    ```
    - **Frontend**: `http://localhost:5173`
    - **Backend API**: `http://localhost:5001`
+   - **Interactive API Docs**: `http://localhost:5001/api/docs`
    - **API Health Check**: `http://localhost:5001/api/health`
 
 ---
@@ -123,18 +129,23 @@ A production-grade, full-stack Human Resource Management System (HRMS) designed 
 
 ---
 
-## 📡 REST API Architecture
+## 📡 REST API Reference
 
 | Module | Method | Endpoint | Access | Description |
 |---|---|---|---|---|
-| **Auth** | `POST` | `/api/auth/register` | Public | Create new employee account |
-| **Auth** | `POST` | `/api/auth/login` | Public | Sign in with email & password |
+| **Docs** | `GET` | `/api/docs` | Public | Interactive Swagger API documentation UI |
+| **Docs** | `GET` | `/api/docs/openapi.json` | Public | Raw OpenAPI 3.0 specification |
+| **Auth** | `POST` | `/api/auth/register` | Public | Create new employee account (Rate-limited) |
 | **Auth** | `POST` | `/api/auth/verify-email` | Public | 6-digit email verification code |
+| **Auth** | `POST` | `/api/auth/resend-code` | Public | Resend 6-digit verification code |
+| **Auth** | `POST` | `/api/auth/login` | Public | Sign in with email & password (Rate-limited) |
 | **Auth** | `GET` | `/api/auth/quick-login` | Public | 1-Click demo authentication |
 | **Auth** | `GET` | `/api/auth/me` | Authenticated | Fetch current profile & unread badge count |
 | **Employees** | `GET` | `/api/employees` | Authenticated | List employees with search & filters |
 | **Employees** | `GET` | `/api/employees/:id` | Authenticated | Get full employee profile |
 | **Employees** | `PUT` | `/api/employees/:id` | Authenticated | Self-service or Admin profile update |
+| **Employees** | `POST` | `/api/employees/:id/avatar` | Authenticated | Upload custom profile avatar image |
+| **Employees** | `POST` | `/api/employees/:id/documents` | Authenticated | Upload or attach certified employee document |
 | **Employees** | `POST` | `/api/employees` | HR Admin | Create new employee record |
 | **Employees** | `DELETE` | `/api/employees/:id` | HR Admin | Terminate/delete employee record |
 | **Attendance** | `GET` | `/api/attendance/today` | Authenticated | Today's check-in status & duration |

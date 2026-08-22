@@ -36,8 +36,8 @@ export const getTodayStatus = (req, res) => {
 
     return res.json({
       todayRecord: record || null,
-      isCheckedIn: record && record.check_in_time && !record.check_out_time,
-      isCheckedOut: record && record.check_out_time,
+      isCheckedIn: Boolean(record && record.check_in_time && !record.check_out_time),
+      isCheckedOut: Boolean(record && record.check_out_time),
       totalWeeklyMinutes,
       serverTime: new Date().toISOString()
     });
@@ -190,7 +190,7 @@ export const getCompanyAttendance = (req, res) => {
              a.work_duration_minutes, a.status, a.check_in_ip, a.notes, a.is_manual_override,
              u.employee_id, u.email,
              p.first_name, p.last_name, p.avatar_url, p.department, p.designation
-      FROM attendance_records a
+            FROM attendance_records a
       JOIN users u ON a.user_id = u.id
       JOIN employee_profiles p ON u.id = p.user_id
       WHERE 1=1
