@@ -1,0 +1,283 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Dayflow HRMS REST API",
+    "version": "1.0.0",
+    "description": "Production REST API for Dayflow Human Resource & Workforce Management System. Features secure JWT authentication, email verification, attendance tracking, leave workflows, role-based access control, payroll compensation structure management, and reporting."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:5001/api",
+      "description": "Local Development Server"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "security": [
+    {
+      "BearerAuth": []
+    }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "summary": "System Health Status",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Backend API is online and functioning."
+          }
+        }
+      }
+    },
+    "/auth/register": {
+      "post": {
+        "summary": "Register a new employee/admin account",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["employeeId", "email", "password"],
+                "properties": {
+                  "employeeId": { "type": "string", "example": "EMP-201" },
+                  "email": { "type": "string", "example": "jordan@dayflow.com" },
+                  "password": { "type": "string", "example": "SecurePass@123" },
+                  "role": { "type": "string", "enum": ["employee", "hr_admin"], "default": "employee" },
+                  "firstName": { "type": "string", "example": "Jordan" },
+                  "lastName": { "type": "string", "example": "Miller" },
+                  "department": { "type": "string", "example": "Engineering" },
+                  "designation": { "type": "string", "example": "Software Engineer" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "User created. Verification email sent." },
+          "400": { "description": "Validation failed." },
+          "409": { "description": "Email or Employee ID already registered." }
+        }
+      }
+    },
+    "/auth/verify-email": {
+      "post": {
+        "summary": "Verify work email with 6-digit PIN",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "code"],
+                "properties": {
+                  "email": { "type": "string", "example": "jordan@dayflow.com" },
+                  "code": { "type": "string", "example": "123456" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Email verified successfully, returns JWT token." },
+          "400": { "description": "Invalid code." }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "summary": "Sign in with email and password",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "password"],
+                "properties": {
+                  "email": { "type": "string", "example": "admin@dayflow.com" },
+                  "password": { "type": "string", "example": "Admin@123" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Authenticated. Returns user profile & JWT token." },
+          "401": { "description": "Invalid credentials." },
+          "403": { "description": "Email unverified or account deactivated." }
+        }
+      }
+    },
+    "/auth/quick-login": {
+      "get": {
+        "summary": "Instant 1-click demo login helper",
+        "security": [],
+        "parameters": [
+          { "name": "role", "in": "query", "schema": { "type": "string", "enum": ["admin", "employee"] } }
+        ],
+        "responses": {
+          "200": { "description": "Instant demo login token and profile." }
+        }
+      }
+    },
+    "/auth/me": {
+      "get": {
+        "summary": "Fetch authenticated user profile and notification count",
+        "responses": {
+          "200": { "description": "Current user profile." }
+        }
+      }
+    },
+    "/attendance/today": {
+      "get": {
+        "summary": "Get today's clock-in status and live work duration",
+        "responses": {
+          "200": { "description": "Today's check-in status." }
+        }
+      }
+    },
+    "/attendance/check-in": {
+      "post": {
+        "summary": "Record daily attendance check-in",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "notes": { "type": "string", "example": "Checked in via web portal" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Check-in recorded with Present/Late status." }
+        }
+      }
+    },
+    "/attendance/check-out": {
+      "post": {
+        "summary": "Record daily attendance check-out",
+        "responses": {
+          "200": { "description": "Check-out recorded and work hours calculated." }
+        }
+      }
+    },
+    "/leaves/balances": {
+      "get": {
+        "summary": "Get employee leave balance breakdown (Paid, Sick, Casual)",
+        "responses": {
+          "200": { "description": "Current leave balance quota." }
+        }
+      }
+    },
+    "/leaves/apply": {
+      "post": {
+        "summary": "Submit a leave application for HR approval",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["leaveType", "startDate", "endDate", "reason"],
+                "properties": {
+                  "leaveType": { "type": "string", "enum": ["Paid", "Sick", "Casual", "Unpaid"] },
+                  "startDate": { "type": "string", "format": "date", "example": "2026-09-01" },
+                  "endDate": { "type": "string", "format": "date", "example": "2026-09-04" },
+                  "reason": { "type": "string", "example": "Annual vacation trip." },
+                  "isHalfDay": { "type": "boolean", "default": false }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Leave request submitted." }
+        }
+      }
+    },
+    "/leaves/{id}/review": {
+      "put": {
+        "summary": "Review and Approve/Reject leave application (HR Admin Only)",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["status"],
+                "properties": {
+                  "status": { "type": "string", "enum": ["Approved", "Rejected"] },
+                  "adminRemark": { "type": "string", "example": "Approved. Enjoy your vacation!" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Leave status updated and balance deducted." },
+          "403": { "description": "Forbidden if not HR Admin." }
+        }
+      }
+    },
+    "/payroll/my-structure": {
+      "get": {
+        "summary": "Read-only salary compensation breakdown for logged in employee",
+        "responses": {
+          "200": { "description": "Salary structure details." }
+        }
+      }
+    },
+    "/payroll/generate": {
+      "post": {
+        "summary": "Generate batch monthly payroll slips (HR Admin Only)",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["month", "year"],
+                "properties": {
+                  "month": { "type": "integer", "example": 9 },
+                  "year": { "type": "integer", "example": 2026 },
+                  "paymentDate": { "type": "string", "format": "date", "example": "2026-09-30" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Monthly payroll generated." },
+          "403": { "description": "Forbidden for non-admins." }
+        }
+      }
+    },
+    "/reports/dashboard-stats": {
+      "get": {
+        "summary": "Company-wide workforce analytics and metrics (HR Admin Only)",
+        "responses": {
+          "200": { "description": "Dashboard statistics." },
+          "403": { "description": "Forbidden for non-admins." }
+        }
+      }
+    }
+  }
+}
