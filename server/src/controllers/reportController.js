@@ -107,7 +107,7 @@ export const getDashboardStats = (req, res) => {
         payroll: {
           totalGross: payrollCost.total_gross || 0,
           totalNet: payrollCost.total_net || 0,
-          currency: 'USD'
+          currency: 'INR'
         },
         departmentDistribution,
         leavesByType,

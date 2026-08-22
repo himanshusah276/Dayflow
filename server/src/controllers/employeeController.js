@@ -291,12 +291,12 @@ export const createEmployee = (req, res) => {
         INSERT INTO employee_profiles (
           user_id, first_name, last_name, avatar_url, phone,
           department, designation, date_of_joining, employment_type,
-          status, reporting_manager, work_location
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'Active', ?, ?)
+          status, reporting_manager, work_location, country
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'Active', ?, ?, 'India')
       `).run(
         userId, firstName, lastName, avatar, phone || '',
         department, designation, dateOfJoining || new Date().toISOString().split('T')[0],
-        employmentType || 'Full-Time', reportingManager || 'HR Manager', workLocation || 'Headquarters (San Francisco)'
+        employmentType || 'Full-Time', reportingManager || 'HR Operations', workLocation || 'HQ — Electronic City, Bengaluru'
       );
 
       // Insert leave balance
@@ -306,30 +306,32 @@ export const createEmployee = (req, res) => {
         VALUES (?, ?, 18, 10, 8)
       `).run(userId, currentYear);
 
-      // Insert salary structure
-      const basic = parseFloat(basicSalary) || 4500;
-      const hra = basic * 0.4;
-      const conveyance = 300;
-      const special = 500;
-      const gross = basic + hra + conveyance + special;
-      const pf = basic * 0.12;
-      const tax = gross * 0.12;
-      const ins = 150;
-      const deductions = pf + tax + ins;
+      // Insert salary structure (Indian INR components)
+      const basic = parseFloat(basicSalary) || 75000;
+      const hra = Math.round(basic * 0.4);
+      const conveyance = 2000;
+      const special = 15000;
+      const medical = 1800;
+      const gross = basic + hra + conveyance + special + medical;
+      const pf = Math.round(basic * 0.12);
+      const pt = 200;
+      const tax = Math.round(gross * 0.10);
+      const ins = 750;
+      const deductions = pf + pt + tax + ins;
       const net = gross - deductions;
 
       db.prepare(`
         INSERT INTO salary_structures (
-          user_id, basic_salary, hra, conveyance_allowance, special_allowance,
-          provident_fund, professional_tax, health_insurance,
-          gross_salary, total_deductions, net_salary
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-      `).run(userId, basic, hra, conveyance, special, pf, tax, ins, gross, deductions, net);
+          user_id, currency, basic_salary, hra, conveyance_allowance, special_allowance,
+          medical_allowance, provident_fund, professional_tax, health_insurance,
+          gross_salary, total_deductions, net_salary, payment_method
+        ) VALUES (?, 'INR', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'NEFT / Direct Bank Transfer')
+      `).run(userId, basic, hra, conveyance, special, medical, pf, pt, ins, gross, deductions, net);
 
       // Welcome notification
       db.prepare(`
         INSERT INTO notifications (user_id, title, message, type)
-        VALUES (?, 'Welcome to Dayflow!', 'Your profile has been created by HR. You can now track attendance, view payroll, and apply for leaves.', 'system')
+        VALUES (?, 'Welcome to Dayflow!', 'Your profile has been created by HR. You can now track attendance, view your INR salary slips, and apply for leaves.', 'system')
       `).run(userId);
     });
 
@@ -349,7 +351,7 @@ export const createEmployee = (req, res) => {
     });
   } catch (error) {
     console.error('createEmployee error:', error);
-    return res.status(500).json({ error: 'Failed to create employee.' });
+    return res.status(500).json({ error: error.message || 'Failed to create employee' });
   }
 };
 
@@ -357,13 +359,20 @@ export const deleteEmployee = (req, res) => {
   try {
     const targetUserId = parseInt(req.params.id, 10);
 
-    if (req.user.id === targetUserId) {
-      return res.status(400).json({ error: 'You cannot delete your own admin account.' });
+    const user = db.prepare('SELECT id, employee_id FROM users WHERE id = ?').get(targetUserId);
+    if (!user) {
+      return res.status(404).json({ error: 'Employee not found.' });
+    }
+
+    if (user.id === req.user.id) {
+      return res.status(400).json({ error: 'You cannot delete your own administrative account.' });
     }
 
     db.prepare('DELETE FROM users WHERE id = ?').run(targetUserId);
 
-    return res.json({ message: 'Employee deleted successfully.' });
+    return res.json({
+      message: `Employee ${user.employee_id} and all associated records deleted successfully.`
+    });
   } catch (error) {
     console.error('deleteEmployee error:', error);
     return res.status(500).json({ error: 'Failed to delete employee' });
@@ -441,13 +450,48 @@ export const uploadDocument = async (req, res) => {
       VALUES (?, ?, ?, ?, ?, ?)
     `).run(targetUserId, title, docType, fileName, fileSize, fileUrl);
 
+    const newDoc = db.prepare('SELECT * FROM documents WHERE id = ?').get(result.lastInsertRowid);
+
     return res.status(201).json({
       message: 'Document uploaded successfully.',
       documentId: result.lastInsertRowid,
+      document: newDoc,
       fileUrl
     });
   } catch (error) {
     console.error('uploadDocument error:', error);
     return res.status(500).json({ error: error.message || 'Failed to upload document.' });
+  }
+};
+
+export const deleteDocument = async (req, res) => {
+  try {
+    const targetUserId = parseInt(req.params.id, 10);
+    const docId = parseInt(req.params.docId, 10);
+    const isHrAdmin = req.user.role === 'hr_admin';
+
+    if (!isHrAdmin && req.user.id !== targetUserId) {
+      return res.status(403).json({ error: 'Access denied. You can only delete your own documents.' });
+    }
+
+    const doc = db.prepare('SELECT * FROM documents WHERE id = ? AND user_id = ?').get(docId, targetUserId);
+    if (!doc) {
+      return res.status(404).json({ error: 'Document not found.' });
+    }
+
+    // Unlink physical file if stored locally
+    if (doc.file_url && doc.file_url.startsWith('/uploads/')) {
+      await storageProvider.deleteFile(doc.file_url);
+    }
+
+    db.prepare('DELETE FROM documents WHERE id = ?').run(docId);
+
+    return res.json({
+      message: 'Document deleted successfully.',
+      documentId: docId
+    });
+  } catch (error) {
+    console.error('deleteDocument error:', error);
+    return res.status(500).json({ error: error.message || 'Failed to delete document.' });
   }
 };

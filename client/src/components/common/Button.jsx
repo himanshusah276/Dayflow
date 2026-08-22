@@ -14,18 +14,18 @@ export function Button({
   ...props
 }) {
   const sizeClasses = {
-    sm: 'px-3 py-1.5 text-xs font-medium rounded-lg gap-1.5',
-    md: 'px-4 py-2 text-sm font-medium rounded-xl gap-2',
-    lg: 'px-5 py-2.5 text-base font-semibold rounded-xl gap-2.5',
+    sm: 'px-3 py-1.5 text-xs font-semibold rounded-xl gap-1.5',
+    md: 'px-4 py-2 text-xs sm:text-sm font-bold rounded-xl gap-2',
+    lg: 'px-5 py-2.5 text-sm sm:text-base font-bold rounded-2xl gap-2.5',
   };
 
   const variantClasses = {
     primary: 'bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white shadow-sm hover:shadow transition-all duration-150',
-    secondary: 'bg-slate-900 hover:bg-slate-800 active:bg-slate-950 text-white shadow-sm hover:shadow transition-all duration-150',
-    outline: 'border border-slate-300 bg-white hover:bg-slate-50 active:bg-slate-100 text-slate-700 shadow-subtle transition-all duration-150',
-    ghost: 'text-slate-600 hover:bg-slate-100 active:bg-slate-200 transition-all duration-150',
+    secondary: 'bg-slate-900 hover:bg-slate-800 active:bg-slate-950 dark:bg-slate-800 dark:hover:bg-slate-700 text-white shadow-sm hover:shadow transition-all duration-150',
+    outline: 'border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-750 active:bg-slate-100 text-slate-700 dark:text-slate-200 shadow-subtle transition-all duration-150',
+    ghost: 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 active:bg-slate-200 transition-all duration-150',
     danger: 'bg-rose-600 hover:bg-rose-700 active:bg-rose-800 text-white shadow-sm transition-all duration-150',
-    success: 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 active:bg-emerald-200 border border-emerald-200 transition-all duration-150',
+    success: 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 border border-emerald-200 dark:border-emerald-800 transition-all duration-150',
   };
 
   return (

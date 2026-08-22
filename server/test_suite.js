@@ -113,7 +113,7 @@ async function runTests() {
     let newEmployeeId = `EMP-TEST-${Math.floor(100 + Math.random() * 900)}`;
     let verificationPin = '';
 
-    await test('User Registration creates account and returns 6-digit verification PIN', async () => {
+    await test('User Registration creates account and dispatches 6-digit verification PIN', async () => {
       const res = await req('/auth/register', {
         method: 'POST',
         body: JSON.stringify({
@@ -127,9 +127,10 @@ async function runTests() {
         })
       });
       assert.strictEqual(res.status, 201);
-      assert.ok(res.data.devVerificationCode);
-      assert.strictEqual(res.data.devVerificationCode.length, 6);
-      verificationPin = res.data.devVerificationCode;
+      const userRecord = db.prepare('SELECT verification_code FROM users WHERE email = ?').get(newEmployeeEmail);
+      assert.ok(userRecord && userRecord.verification_code);
+      assert.strictEqual(userRecord.verification_code.length, 6);
+      verificationPin = userRecord.verification_code;
     });
 
     // 6. Auth - Attempt Login Before Verification (Should get 403)

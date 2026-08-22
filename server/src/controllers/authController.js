@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs';
 import db from '../config/db.js';
 import { generateToken } from '../config/jwt.js';
 import { sendVerificationEmail } from '../services/emailService.js';
+import { sendOtpSms, normalizePhoneNumber } from '../services/smsService.js';
 
 // Password complexity: at least 8 chars, containing at least 1 letter and 1 number
 function validatePassword(password) {
@@ -21,20 +22,28 @@ function generateVerificationCode() {
 
 export const register = async (req, res) => {
   try {
-    const { employeeId, email, password, role, firstName, lastName, department, designation } = req.body;
+    const { employeeId, email, phone, password, role, firstName, lastName, department, designation } = req.body;
 
-    if (!employeeId || !email || !password) {
-      return res.status(400).json({ error: 'Employee ID, email, and password are required.' });
+    if (!employeeId || !password) {
+      return res.status(400).json({ error: 'Employee ID and password are required.' });
     }
 
-    const cleanEmail = email.trim().toLowerCase();
+    // Require at least phone number OR email
+    if (!phone && !email) {
+      return res.status(400).json({ error: 'Please provide either a mobile phone number or an email address.' });
+    }
+
     const cleanEmpId = employeeId.trim().toUpperCase();
     const assignedRole = role === 'hr_admin' ? 'hr_admin' : 'employee';
+    const cleanPhone = phone ? normalizePhoneNumber(phone.trim()) : null;
+    const cleanEmail = email && email.trim() ? email.trim().toLowerCase() : `${cleanEmpId.toLowerCase()}@dayflow.in`;
 
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(cleanEmail)) {
-      return res.status(400).json({ error: 'Please enter a valid email address.' });
+    // Validate email format if explicitly supplied
+    if (email && email.trim()) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(cleanEmail)) {
+        return res.status(400).json({ error: 'Please enter a valid email address.' });
+      }
     }
 
     // Validate password
@@ -43,10 +52,20 @@ export const register = async (req, res) => {
       return res.status(400).json({ error: pwdCheck.message });
     }
 
-    // Check existing email
-    const existingEmail = db.prepare('SELECT id FROM users WHERE email = ?').get(cleanEmail);
-    if (existingEmail) {
-      return res.status(409).json({ error: 'An account with this email address already exists.' });
+    // Check existing email if provided
+    if (email && email.trim()) {
+      const existingEmail = db.prepare('SELECT id FROM users WHERE email = ?').get(cleanEmail);
+      if (existingEmail) {
+        return res.status(409).json({ error: 'An account with this email address already exists.' });
+      }
+    }
+
+    // Check existing phone if provided
+    if (cleanPhone) {
+      const existingPhone = db.prepare('SELECT id FROM users WHERE phone = ?').get(cleanPhone);
+      if (existingPhone) {
+        return res.status(409).json({ error: 'An account with this mobile phone number already exists.' });
+      }
     }
 
     // Check existing employee ID
@@ -68,17 +87,17 @@ export const register = async (req, res) => {
     let userId;
     const registerTransaction = db.transaction(() => {
       const insertUser = db.prepare(`
-        INSERT INTO users (employee_id, email, password_hash, role, is_verified, verification_code, verification_code_expires_at)
-        VALUES (?, ?, ?, ?, 0, ?, ?)
+        INSERT INTO users (employee_id, email, phone, password_hash, role, is_verified, verification_code, verification_code_expires_at)
+        VALUES (?, ?, ?, ?, ?, 0, ?, ?)
       `);
-      const result = insertUser.run(cleanEmpId, cleanEmail, passwordHash, assignedRole, verificationCode, expiresAt);
+      const result = insertUser.run(cleanEmpId, cleanEmail, cleanPhone, passwordHash, assignedRole, verificationCode, expiresAt);
       userId = result.lastInsertRowid;
 
       // Create profile
       db.prepare(`
-        INSERT INTO employee_profiles (user_id, first_name, last_name, department, designation, date_of_joining)
-        VALUES (?, ?, ?, ?, ?, DATE('now'))
-      `).run(userId, fName, lName, dept, desig);
+        INSERT INTO employee_profiles (user_id, first_name, last_name, phone, department, designation, date_of_joining, country, work_location)
+        VALUES (?, ?, ?, ?, ?, ?, DATE('now'), 'India', 'HQ — Electronic City, Bengaluru')
+      `).run(userId, fName, lName, cleanPhone, dept, desig);
 
       // Create default leave balances
       const currentYear = new Date().getFullYear();
@@ -87,54 +106,72 @@ export const register = async (req, res) => {
         VALUES (?, ?, 18, 10, 8)
       `).run(userId, currentYear);
 
-      // Create default salary structure
-      const defaultBasic = assignedRole === 'hr_admin' ? 5000 : 4200;
-      const defaultHra = defaultBasic * 0.4;
-      const defaultAllowances = 800;
-      const defaultGross = defaultBasic + defaultHra + defaultAllowances;
-      const defaultTax = defaultGross * 0.12;
-      const defaultPf = defaultBasic * 0.12;
-      const defaultInsurance = 150;
-      const defaultDeductions = defaultTax + defaultPf + defaultInsurance;
+      // Create default salary structure (INR)
+      const defaultBasic = assignedRole === 'hr_admin' ? 95000 : 75000;
+      const defaultHra = Math.round(defaultBasic * 0.4);
+      const defaultConveyance = 2000;
+      const defaultSpecial = 15000;
+      const defaultMedical = 1800;
+      const defaultGross = defaultBasic + defaultHra + defaultConveyance + defaultSpecial + defaultMedical;
+      const defaultPf = Math.round(defaultBasic * 0.12);
+      const defaultPt = 200;
+      const defaultTax = Math.round(defaultGross * 0.10);
+      const defaultInsurance = 750;
+      const defaultDeductions = defaultPf + defaultPt + defaultTax + defaultInsurance;
       const defaultNet = defaultGross - defaultDeductions;
 
       db.prepare(`
         INSERT INTO salary_structures (
-          user_id, basic_salary, hra, conveyance_allowance, special_allowance,
-          provident_fund, professional_tax, health_insurance,
-          gross_salary, total_deductions, net_salary
-        ) VALUES (?, ?, ?, 300, 500, ?, ?, ?, ?, ?, ?)
+          user_id, currency, basic_salary, hra, conveyance_allowance, special_allowance,
+          medical_allowance, provident_fund, professional_tax, health_insurance,
+          gross_salary, total_deductions, net_salary, payment_method
+        ) VALUES (?, 'INR', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'NEFT / Direct Bank Transfer')
       `).run(
-        userId, defaultBasic, defaultHra,
-        defaultPf, defaultTax, defaultInsurance,
+        userId, defaultBasic, defaultHra, defaultConveyance, defaultSpecial, defaultMedical,
+        defaultPf, defaultPt, defaultInsurance,
         defaultGross, defaultDeductions, defaultNet
       );
 
       // Welcome notification
       db.prepare(`
         INSERT INTO notifications (user_id, title, message, type)
-        VALUES (?, 'Welcome to Dayflow!', 'Your account has been created. Complete your email verification to get full access.', 'system')
+        VALUES (?, 'Welcome to Dayflow!', 'Your account has been created. Complete your OTP verification to get full access to your Indian HRMS portal.', 'system')
       `).run(userId);
     });
 
     registerTransaction();
 
-    // Dispatch real email verification
-    try {
-      await sendVerificationEmail({
-        to: cleanEmail,
-        name: fName,
-        code: verificationCode
-      });
-    } catch (mailErr) {
-      console.warn('Failed to send verification email via transporter, dev code is logged:', mailErr.message);
+    // Dispatch SMS OTP if phone provided
+    if (cleanPhone) {
+      try {
+        await sendOtpSms({
+          phone: cleanPhone,
+          name: fName,
+          code: verificationCode
+        });
+      } catch (smsErr) {
+        console.warn('Failed to send SMS OTP:', smsErr.message);
+      }
+    }
+
+    // Dispatch real email verification if email provided
+    if (email && email.trim()) {
+      try {
+        await sendVerificationEmail({
+          to: cleanEmail,
+          name: fName,
+          code: verificationCode
+        });
+      } catch (mailErr) {
+        console.warn('Failed to send verification email via transporter:', mailErr.message);
+      }
     }
 
     return res.status(201).json({
-      message: 'Registration successful. A 6-digit verification code has been sent to your email.',
+      message: 'Registration successful. A 6-digit OTP verification code has been dispatched.',
+      phone: cleanPhone,
       email: cleanEmail,
-      employeeId: cleanEmpId,
-      devVerificationCode: verificationCode,
+      employeeId: cleanEmpId
     });
   } catch (error) {
     console.error('Registration error:', error);
@@ -144,25 +181,26 @@ export const register = async (req, res) => {
 
 export const verifyEmail = (req, res) => {
   try {
-    const { email, code } = req.body;
+    const { identifier, email, phone, code } = req.body;
+    const lookupKey = (identifier || email || phone || '').trim();
 
-    if (!email || !code) {
-      return res.status(400).json({ error: 'Email and verification code are required.' });
+    if (!lookupKey || !code) {
+      return res.status(400).json({ error: 'Mobile number or email and verification code are required.' });
     }
 
-    const cleanEmail = email.trim().toLowerCase();
     const cleanCode = code.toString().trim();
+    const normPhone = normalizePhoneNumber(lookupKey);
 
     const user = db.prepare(`
-      SELECT u.id, u.employee_id, u.email, u.role, u.is_verified, u.verification_code, u.verification_code_expires_at,
+      SELECT u.id, u.employee_id, u.email, u.phone, u.role, u.is_verified, u.verification_code, u.verification_code_expires_at,
              p.first_name, p.last_name, p.avatar_url, p.department, p.designation
       FROM users u
       LEFT JOIN employee_profiles p ON u.id = p.user_id
-      WHERE u.email = ?
-    `).get(cleanEmail);
+      WHERE u.email = ? OR u.phone = ? OR u.phone = ? OR u.employee_id = ?
+    `).get(lookupKey.toLowerCase(), lookupKey, normPhone, lookupKey.toUpperCase());
 
     if (!user) {
-      return res.status(404).json({ error: 'No account found with this email address.' });
+      return res.status(404).json({ error: 'No account found matching this mobile number or email.' });
     }
 
     if (user.is_verified === 1) {
@@ -174,6 +212,7 @@ export const verifyEmail = (req, res) => {
           id: user.id,
           employeeId: user.employee_id,
           email: user.email,
+          phone: user.phone,
           role: user.role,
           isVerified: true,
           firstName: user.first_name,
@@ -186,12 +225,12 @@ export const verifyEmail = (req, res) => {
     }
 
     if (user.verification_code !== cleanCode) {
-      return res.status(400).json({ error: 'Invalid verification code. Please check and try again.' });
+      return res.status(400).json({ error: 'Invalid verification OTP. Please check and try again.' });
     }
 
     // Check expiration
     if (user.verification_code_expires_at && new Date(user.verification_code_expires_at) < new Date()) {
-      return res.status(400).json({ error: 'Verification code has expired. Please request a new code.' });
+      return res.status(400).json({ error: 'Verification code has expired. Please request a new OTP.' });
     }
 
     // Mark verified
@@ -204,12 +243,13 @@ export const verifyEmail = (req, res) => {
     const token = generateToken({ id: user.id, email: user.email, role: user.role });
 
     return res.json({
-      message: 'Email verified successfully!',
+      message: 'Account verified successfully!',
       token,
       user: {
         id: user.id,
         employeeId: user.employee_id,
         email: user.email,
+        phone: user.phone,
         role: user.role,
         isVerified: true,
         firstName: user.first_name,
@@ -227,21 +267,24 @@ export const verifyEmail = (req, res) => {
 
 export const resendVerificationCode = async (req, res) => {
   try {
-    const { email } = req.body;
-    if (!email) {
-      return res.status(400).json({ error: 'Email is required.' });
+    const { identifier, email, phone } = req.body;
+    const lookupKey = (identifier || email || phone || '').trim();
+
+    if (!lookupKey) {
+      return res.status(400).json({ error: 'Mobile number or email is required.' });
     }
 
-    const cleanEmail = email.trim().toLowerCase();
+    const normPhone = normalizePhoneNumber(lookupKey);
+
     const user = db.prepare(`
-      SELECT u.id, u.is_verified, p.first_name
+      SELECT u.id, u.email, u.phone, u.employee_id, u.is_verified, p.first_name
       FROM users u
       LEFT JOIN employee_profiles p ON u.id = p.user_id
-      WHERE u.email = ?
-    `).get(cleanEmail);
+      WHERE u.email = ? OR u.phone = ? OR u.phone = ? OR u.employee_id = ?
+    `).get(lookupKey.toLowerCase(), lookupKey, normPhone, lookupKey.toUpperCase());
 
     if (!user) {
-      return res.status(404).json({ error: 'No account found with this email address.' });
+      return res.status(404).json({ error: 'No account found matching this mobile number or email.' });
     }
 
     if (user.is_verified === 1) {
@@ -257,47 +300,63 @@ export const resendVerificationCode = async (req, res) => {
       WHERE id = ?
     `).run(newCode, expiresAt, user.id);
 
-    try {
-      await sendVerificationEmail({
-        to: cleanEmail,
-        name: user.first_name,
-        code: newCode
-      });
-    } catch (mailErr) {
-      console.warn('Failed to send resend email via transporter:', mailErr.message);
+    // Send SMS if phone exists
+    if (user.phone) {
+      try {
+        await sendOtpSms({
+          phone: user.phone,
+          name: user.first_name,
+          code: newCode
+        });
+      } catch (smsErr) {
+        console.warn('Failed to resend SMS OTP:', smsErr.message);
+      }
+    }
+
+    // Send Email if real email exists
+    if (user.email && !user.email.endsWith('@dayflow.in')) {
+      try {
+        await sendVerificationEmail({
+          to: user.email,
+          name: user.first_name,
+          code: newCode
+        });
+      } catch (mailErr) {
+        console.warn('Failed to resend verification email:', mailErr.message);
+      }
     }
 
     return res.json({
-      message: 'A new 6-digit verification code has been sent.',
-      devVerificationCode: newCode,
+      message: 'A new 6-digit verification code has been dispatched to your mobile / email.'
     });
   } catch (error) {
     console.error('Resend code error:', error);
-    return res.status(500).json({ error: 'Failed to resend code.' });
+    return res.status(500).json({ error: 'Failed to resend OTP code.' });
   }
 };
 
 export const login = (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { identifier, email, phone, password } = req.body;
+    const lookupKey = (identifier || email || phone || '').trim();
 
-    if (!email || !password) {
-      return res.status(400).json({ error: 'Please provide both email and password.' });
+    if (!lookupKey || !password) {
+      return res.status(400).json({ error: 'Please provide your mobile number / email and password.' });
     }
 
-    const cleanEmail = email.trim().toLowerCase();
+    const normPhone = normalizePhoneNumber(lookupKey);
 
     const user = db.prepare(`
-      SELECT u.id, u.employee_id, u.email, u.password_hash, u.role, u.is_verified,
+      SELECT u.id, u.employee_id, u.email, u.phone, u.password_hash, u.role, u.is_verified,
              p.first_name, p.last_name, p.avatar_url, p.department, p.designation, p.status
       FROM users u
       LEFT JOIN employee_profiles p ON u.id = p.user_id
-      WHERE u.email = ?
-    `).get(cleanEmail);
+      WHERE u.email = ? OR u.phone = ? OR u.phone = ? OR u.employee_id = ?
+    `).get(lookupKey.toLowerCase(), lookupKey, normPhone, lookupKey.toUpperCase());
 
     if (!user) {
       return res.status(401).json({
-        error: 'No account found with this email address. Please check your spelling or sign up.'
+        error: 'No account found with these details. Please check your credentials or register.'
       });
     }
 
@@ -310,9 +369,11 @@ export const login = (req, res) => {
 
     if (user.is_verified === 0) {
       return res.status(403).json({
-        error: 'Please verify your email before signing in.',
+        error: 'Please verify your phone number or email before signing in.',
         needsVerification: true,
-        email: user.email
+        identifier: user.phone || user.email,
+        email: user.email,
+        phone: user.phone
       });
     }
 
@@ -331,57 +392,56 @@ export const login = (req, res) => {
         id: user.id,
         employeeId: user.employee_id,
         email: user.email,
+        phone: user.phone,
         role: user.role,
         isVerified: true,
         firstName: user.first_name,
         lastName: user.last_name,
         avatarUrl: user.avatar_url,
         department: user.department,
-        designation: user.designation,
-        status: user.status
+        designation: user.designation
       }
     });
   } catch (error) {
     console.error('Login error:', error);
-    return res.status(500).json({ error: 'Authentication failed. Please try again.' });
+    return res.status(500).json({ error: 'Internal login error. Please try again.' });
   }
 };
 
-// 1-Click Quick Demo Login helper (allows instantaneous testing without typing)
 export const quickLogin = (req, res) => {
   try {
-    const { role } = req.query; // 'admin' or 'employee'
-    const targetEmail = role === 'admin' ? 'admin@dayflow.com' : 'alex@dayflow.com';
+    const role = req.query.role || 'employee';
+    const targetEmail = role === 'admin' || role === 'hr_admin' ? 'admin@dayflow.com' : 'alex@dayflow.com';
 
     const user = db.prepare(`
-      SELECT u.id, u.employee_id, u.email, u.role, u.is_verified,
-             p.first_name, p.last_name, p.avatar_url, p.department, p.designation, p.status
+      SELECT u.id, u.employee_id, u.email, u.phone, u.role, u.is_verified,
+             p.first_name, p.last_name, p.avatar_url, p.department, p.designation
       FROM users u
       LEFT JOIN employee_profiles p ON u.id = p.user_id
       WHERE u.email = ?
     `).get(targetEmail);
 
     if (!user) {
-      return res.status(404).json({ error: 'Demo account not found. Please run seed script.' });
+      return res.status(404).json({ error: 'Demo user account not found.' });
     }
 
     const token = generateToken({ id: user.id, email: user.email, role: user.role });
 
     return res.json({
-      message: `Quick logged in as ${user.first_name} (${user.role === 'hr_admin' ? 'HR Admin' : 'Employee'})`,
+      message: `Quick login as ${user.role} successful.`,
       token,
       user: {
         id: user.id,
         employeeId: user.employee_id,
         email: user.email,
+        phone: user.phone,
         role: user.role,
         isVerified: true,
         firstName: user.first_name,
         lastName: user.last_name,
         avatarUrl: user.avatar_url,
         department: user.department,
-        designation: user.designation,
-        status: user.status
+        designation: user.designation
       }
     });
   } catch (error) {
@@ -392,45 +452,38 @@ export const quickLogin = (req, res) => {
 
 export const getMe = (req, res) => {
   try {
+    const userId = req.user.id;
+
     const user = db.prepare(`
-      SELECT u.id, u.employee_id, u.email, u.role, u.is_verified, u.created_at,
-             p.first_name, p.last_name, p.avatar_url, p.phone, p.address, p.city, p.state, p.country, p.zip_code,
-             p.emergency_contact_name, p.emergency_contact_phone, p.emergency_contact_relation,
-             p.date_of_birth, p.gender, p.department, p.designation, p.date_of_joining,
-             p.employment_type, p.status, p.reporting_manager, p.work_location, p.bio
+      SELECT u.id, u.employee_id, u.email, u.phone, u.role, u.is_verified, u.created_at,
+             p.first_name, p.last_name, p.avatar_url, p.phone as profile_phone, p.address,
+             p.city, p.state, p.country, p.zip_code, p.department, p.designation,
+             p.date_of_joining, p.employment_type, p.status, p.reporting_manager,
+             p.work_location, p.bio
       FROM users u
       LEFT JOIN employee_profiles p ON u.id = p.user_id
       WHERE u.id = ?
-    `).get(req.user.id);
+    `).get(userId);
 
     if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({ error: 'User profile not found.' });
     }
 
-    // Get unread notification count
-    const unreadNotif = db.prepare('SELECT COUNT(*) as count FROM notifications WHERE user_id = ? AND is_read = 0').get(req.user.id);
+    const unreadCount = db.prepare(`
+      SELECT COUNT(*) as count FROM notifications WHERE user_id = ? AND is_read = 0
+    `).get(userId);
 
     return res.json({
       user: {
         id: user.id,
         employeeId: user.employee_id,
         email: user.email,
+        phone: user.phone || user.profile_phone,
         role: user.role,
-        isVerified: !!user.is_verified,
+        isVerified: user.is_verified === 1,
         firstName: user.first_name,
         lastName: user.last_name,
         avatarUrl: user.avatar_url,
-        phone: user.phone,
-        address: user.address,
-        city: user.city,
-        state: user.state,
-        country: user.country,
-        zipCode: user.zip_code,
-        emergencyContactName: user.emergency_contact_name,
-        emergencyContactPhone: user.emergency_contact_phone,
-        emergencyContactRelation: user.emergency_contact_relation,
-        dateOfBirth: user.date_of_birth,
-        gender: user.gender,
         department: user.department,
         designation: user.designation,
         dateOfJoining: user.date_of_joining,
@@ -438,13 +491,18 @@ export const getMe = (req, res) => {
         status: user.status,
         reportingManager: user.reporting_manager,
         workLocation: user.work_location,
+        address: user.address,
+        city: user.city,
+        state: user.state,
+        country: user.country,
+        zipCode: user.zip_code,
         bio: user.bio,
         createdAt: user.created_at
       },
-      unreadNotificationsCount: unreadNotif ? unreadNotif.count : 0
+      unreadNotificationsCount: unreadCount ? unreadCount.count : 0
     });
   } catch (error) {
     console.error('getMe error:', error);
-    return res.status(500).json({ error: 'Failed to fetch current user profile' });
+    return res.status(500).json({ error: 'Failed to fetch user profile.' });
   }
 };

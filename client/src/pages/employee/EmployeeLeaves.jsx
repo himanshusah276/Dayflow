@@ -77,7 +77,7 @@ export function EmployeeLeaves() {
           isHalfDay: false
         });
         fetchData();
-      }, 1300);
+      }, 1200);
     } catch (err) {
       setErrorMsg(err.message || 'Failed to submit leave application.');
     } finally {
@@ -95,10 +95,10 @@ export function EmployeeLeaves() {
       {/* Top Banner */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">
+          <h1 className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">
             Leave & Time-Off Management
           </h1>
-          <p className="text-xs text-slate-500 mt-1">
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
             Check your annual leave entitlement, submit time-off applications, and track approvals
           </p>
         </div>
@@ -108,7 +108,7 @@ export function EmployeeLeaves() {
           size="md"
           icon={Plus}
           onClick={() => setShowApplyModal(true)}
-          className="font-bold shadow-md shadow-emerald-600/30"
+          className="font-bold shadow-md shadow-emerald-600/30 cursor-pointer"
         >
           Apply for Leave
         </Button>
@@ -116,67 +116,67 @@ export function EmployeeLeaves() {
 
       {/* Balances Overview */}
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-        <Card className="p-5 bg-gradient-to-br from-emerald-50/60 to-white border-emerald-100">
-          <p className="text-xs font-bold text-emerald-800 uppercase tracking-wider">Paid Annual Leave</p>
+        <Card className="p-5 bg-gradient-to-br from-emerald-50/60 to-white dark:from-emerald-950/20 dark:to-slate-900 border-emerald-100 dark:border-emerald-800/40">
+          <p className="text-xs font-bold text-emerald-800 dark:text-emerald-400 uppercase tracking-wider">Paid Privilege Leave</p>
           <div className="mt-3 flex items-baseline justify-between">
-            <span className="text-3xl font-black text-slate-900">
+            <span className="text-3xl font-black text-slate-900 dark:text-white">
               {(balance?.paid_leave_total || 18) - (balance?.paid_leave_used || 0)}
             </span>
             <span className="text-xs text-slate-400 font-medium">/ {balance?.paid_leave_total || 18} Available</span>
           </div>
-          <p className="text-[11px] text-slate-500 mt-1.5">{balance?.paid_leave_used || 0} days used this year</p>
+          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1.5">{balance?.paid_leave_used || 0} days used this year</p>
         </Card>
 
-        <Card className="p-5 bg-gradient-to-br from-blue-50/60 to-white border-blue-100">
-          <p className="text-xs font-bold text-blue-800 uppercase tracking-wider">Sick Leave</p>
+        <Card className="p-5 bg-gradient-to-br from-blue-50/60 to-white dark:from-blue-950/20 dark:to-slate-900 border-blue-100 dark:border-blue-800/40">
+          <p className="text-xs font-bold text-blue-800 dark:text-blue-400 uppercase tracking-wider">Sick / Medical Leave</p>
           <div className="mt-3 flex items-baseline justify-between">
-            <span className="text-3xl font-black text-slate-900">
+            <span className="text-3xl font-black text-slate-900 dark:text-white">
               {(balance?.sick_leave_total || 10) - (balance?.sick_leave_used || 0)}
             </span>
             <span className="text-xs text-slate-400 font-medium">/ {balance?.sick_leave_total || 10} Available</span>
           </div>
-          <p className="text-[11px] text-slate-500 mt-1.5">{balance?.sick_leave_used || 0} days used this year</p>
+          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1.5">{balance?.sick_leave_used || 0} days used this year</p>
         </Card>
 
-        <Card className="p-5 bg-gradient-to-br from-purple-50/60 to-white border-purple-100">
-          <p className="text-xs font-bold text-purple-800 uppercase tracking-wider">Casual Leave</p>
+        <Card className="p-5 bg-gradient-to-br from-purple-50/60 to-white dark:from-purple-950/20 dark:to-slate-900 border-purple-100 dark:border-purple-800/40">
+          <p className="text-xs font-bold text-purple-800 dark:text-purple-400 uppercase tracking-wider">Casual / Festive Leave</p>
           <div className="mt-3 flex items-baseline justify-between">
-            <span className="text-3xl font-black text-slate-900">
+            <span className="text-3xl font-black text-slate-900 dark:text-white">
               {(balance?.casual_leave_total || 8) - (balance?.casual_leave_used || 0)}
             </span>
             <span className="text-xs text-slate-400 font-medium">/ {balance?.casual_leave_total || 8} Available</span>
           </div>
-          <p className="text-[11px] text-slate-500 mt-1.5">{balance?.casual_leave_used || 0} days used this year</p>
+          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1.5">{balance?.casual_leave_used || 0} days used this year</p>
         </Card>
 
-        <Card className="p-5 bg-gradient-to-br from-slate-50 to-white border-slate-200">
-          <p className="text-xs font-bold text-slate-600 uppercase tracking-wider">Unpaid Leave</p>
+        <Card className="p-5 bg-gradient-to-br from-slate-50 to-white dark:from-slate-800/60 dark:to-slate-900 border-slate-200 dark:border-slate-800">
+          <p className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Unpaid Leave</p>
           <div className="mt-3 flex items-baseline justify-between">
-            <span className="text-3xl font-black text-slate-900">
+            <span className="text-3xl font-black text-slate-900 dark:text-white">
               {balance?.unpaid_leave_used || 0}
             </span>
             <span className="text-xs text-slate-400 font-medium">Days Taken</span>
           </div>
-          <p className="text-[11px] text-slate-500 mt-1.5">No entitlement limit</p>
+          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1.5">No entitlement limit</p>
         </Card>
       </div>
 
       {/* Leave Request History Table */}
       <Card>
-        <div className="p-4 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <h3 className="text-sm font-bold text-slate-900">My Leave Application History</h3>
+        <div className="p-4 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <h3 className="text-sm font-bold text-slate-900 dark:text-white">My Leave Application History</h3>
 
           {/* Status Filters */}
-          <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl w-fit">
+          <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl w-fit">
             {['All', 'Pending', 'Approved', 'Rejected'].map((st) => (
               <button
                 key={st}
                 type="button"
                 onClick={() => setFilterStatus(st)}
-                className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
+                className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                   filterStatus === st
-                    ? 'bg-white text-emerald-800 shadow-xs'
-                    : 'text-slate-600 hover:text-slate-900'
+                    ? 'bg-white dark:bg-slate-700 text-emerald-800 dark:text-emerald-300 shadow-xs'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                 }`}
               >
                 {st}
@@ -187,7 +187,7 @@ export function EmployeeLeaves() {
 
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-slate-50/70 border-b border-slate-100 text-slate-500 font-bold uppercase tracking-wider">
+            <thead className="bg-slate-50/70 dark:bg-slate-800/60 border-b border-slate-100 dark:border-slate-800 text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider">
               <tr>
                 <th className="px-6 py-3.5">Leave Type</th>
                 <th className="px-6 py-3.5">Dates Requested</th>
@@ -197,7 +197,7 @@ export function EmployeeLeaves() {
                 <th className="px-6 py-3.5">HR Reviewer Notes</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
               {loading ? (
                 <tr>
                   <td colSpan={6} className="px-6 py-8 text-center text-slate-400">Loading requests...</td>
@@ -210,22 +210,22 @@ export function EmployeeLeaves() {
                 </tr>
               ) : (
                 filteredRequests.map((req) => (
-                  <tr key={req.id} className="hover:bg-slate-50/60 transition-colors">
-                    <td className="px-6 py-4 font-bold text-slate-900">
+                  <tr key={req.id} className="hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition-colors">
+                    <td className="px-6 py-4 font-bold text-slate-900 dark:text-white">
                       {req.leave_type} Leave
                       {req.is_half_day === 1 && (
-                        <span className="ml-2 text-[10px] text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded font-medium">
+                        <span className="ml-2 text-[10px] text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/60 px-1.5 py-0.5 rounded font-bold border border-blue-200/50 dark:border-blue-800/50">
                           Half-Day
                         </span>
                       )}
                     </td>
-                    <td className="px-6 py-4 text-slate-700">
+                    <td className="px-6 py-4 text-slate-700 dark:text-slate-300">
                       {req.start_date} to {req.end_date}
                     </td>
-                    <td className="px-6 py-4 font-bold text-slate-800">
+                    <td className="px-6 py-4 font-bold text-slate-800 dark:text-slate-200">
                       {req.total_days} {req.total_days === 1 ? 'day' : 'days'}
                     </td>
-                    <td className="px-6 py-4 text-slate-600 max-w-xs truncate">
+                    <td className="px-6 py-4 text-slate-600 dark:text-slate-400 max-w-xs truncate">
                       {req.reason}
                     </td>
                     <td className="px-6 py-4">
@@ -233,7 +233,7 @@ export function EmployeeLeaves() {
                     </td>
                     <td className="px-6 py-4">
                       {req.admin_remark ? (
-                        <span className="text-emerald-800 font-medium bg-emerald-50 px-2 py-0.5 rounded">
+                        <span className="text-emerald-800 dark:text-emerald-300 font-bold bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-200/50 dark:border-emerald-800/50">
                           "{req.admin_remark}"
                         </span>
                       ) : req.status === 'Pending' ? (
@@ -258,60 +258,60 @@ export function EmployeeLeaves() {
         subtitle="Submit a new time-off application for HR review"
       >
         {errorMsg && (
-          <div className="mb-4 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2">
+          <div className="mb-4 p-3 rounded-xl bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-xs flex items-center gap-2">
             <AlertCircle className="w-4 h-4 shrink-0" />
             <span>{errorMsg}</span>
           </div>
         )}
 
         {successMsg && (
-          <div className="mb-4 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" />
+          <div className="mb-4 p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-xs flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
             <span>{successMsg}</span>
           </div>
         )}
 
         <form onSubmit={handleApply} className="space-y-4">
           <div>
-            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
               Leave Type <span className="text-rose-500">*</span>
             </label>
             <select
               value={formData.leaveType}
               onChange={(e) => setFormData({ ...formData, leaveType: e.target.value })}
-              className="block w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className="block w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-750 focus:outline-none focus:ring-2 focus:ring-emerald-500"
               required
             >
-              <option value="Paid">Paid Annual Leave ({(balance?.paid_leave_total || 18) - (balance?.paid_leave_used || 0)} days remaining)</option>
-              <option value="Sick">Sick Leave ({(balance?.sick_leave_total || 10) - (balance?.sick_leave_used || 0)} days remaining)</option>
-              <option value="Casual">Casual Leave ({(balance?.casual_leave_total || 8) - (balance?.casual_leave_used || 0)} days remaining)</option>
+              <option value="Paid">Paid Privilege Leave ({(balance?.paid_leave_total || 18) - (balance?.paid_leave_used || 0)} days remaining)</option>
+              <option value="Sick">Sick / Medical Leave ({(balance?.sick_leave_total || 10) - (balance?.sick_leave_used || 0)} days remaining)</option>
+              <option value="Casual">Casual / Festive Leave ({(balance?.casual_leave_total || 8) - (balance?.casual_leave_used || 0)} days remaining)</option>
               <option value="Unpaid">Unpaid Leave</option>
             </select>
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
                 Start Date <span className="text-rose-500">*</span>
               </label>
               <input
                 type="date"
                 value={formData.startDate}
                 onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
-                className="block w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                className="block w-full px-3.5 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-750 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
                 End Date <span className="text-rose-500">*</span>
               </label>
               <input
                 type="date"
                 value={formData.endDate}
                 onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
-                className="block w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                className="block w-full px-3.5 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-750 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 required
               />
             </div>
@@ -323,15 +323,15 @@ export function EmployeeLeaves() {
               id="halfDayApply"
               checked={formData.isHalfDay}
               onChange={(e) => setFormData({ ...formData, isHalfDay: e.target.checked })}
-              className="rounded text-emerald-600 focus:ring-emerald-500 h-4 w-4"
+              className="rounded text-emerald-600 focus:ring-emerald-500 h-4 w-4 cursor-pointer"
             />
-            <label htmlFor="halfDayApply" className="text-xs font-medium text-slate-700">
+            <label htmlFor="halfDayApply" className="text-xs font-bold text-slate-700 dark:text-slate-300 cursor-pointer">
               Half-Day leave (0.5 day)
             </label>
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
               Reason / Justification <span className="text-rose-500">*</span>
             </label>
             <textarea
@@ -339,7 +339,7 @@ export function EmployeeLeaves() {
               value={formData.reason}
               onChange={(e) => setFormData({ ...formData, reason: e.target.value })}
               placeholder="State the reason for your time-off request..."
-              className="block w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className="block w-full px-3.5 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-750 focus:outline-none focus:ring-2 focus:ring-emerald-500"
               required
             />
           </div>

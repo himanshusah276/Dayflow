@@ -27,7 +27,7 @@ import {
   CartesianGrid
 } from 'recharts';
 
-const COLORS = ['#16a34a', '#3b82f6', '#9333ea', '#f59e0b', '#ef4444', '#06b6d4', '#8b5cf6'];
+const COLORS = ['#10b981', '#3b82f6', '#8b5cf6', '#f59e0b', '#ef4444', '#06b6d4', '#ec4899'];
 
 export function ReportsAnalytics() {
   const [stats, setStats] = useState(null);
@@ -82,11 +82,11 @@ export function ReportsAnalytics() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">
-            Workforce Reports & Analytics
+          <h1 className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+            Workforce Reports & Analytics (India)
           </h1>
-          <p className="text-xs text-slate-500 mt-1">
-            Data insights on headcount, department distribution, attendance rates, and compensation
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+            Data insights on headcount, department distribution, attendance rates, and INR compensation
           </p>
         </div>
 
@@ -97,7 +97,7 @@ export function ReportsAnalytics() {
             icon={Download}
             isLoading={exportingAtt}
             onClick={handleExportAttendance}
-            className="shadow-xs font-semibold"
+            className="shadow-xs font-bold cursor-pointer"
           >
             Attendance CSV
           </Button>
@@ -108,7 +108,7 @@ export function ReportsAnalytics() {
             icon={FileSpreadsheet}
             isLoading={exportingPay}
             onClick={handleExportPayroll}
-            className="shadow-xs font-semibold"
+            className="shadow-xs font-bold cursor-pointer"
           >
             Payroll CSV
           </Button>
@@ -118,7 +118,7 @@ export function ReportsAnalytics() {
             size="md"
             icon={Printer}
             onClick={handlePrint}
-            className="font-bold shadow-md shadow-emerald-600/30"
+            className="font-bold shadow-md shadow-emerald-600/30 cursor-pointer"
           >
             Print Executive Report
           </Button>
@@ -127,30 +127,30 @@ export function ReportsAnalytics() {
 
       {/* Summary KPI Ribbon */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <Card className="p-5 bg-white border-slate-200">
+        <Card className="p-5 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800">
           <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Active Employees</span>
-          <p className="text-3xl font-black text-slate-900 mt-1">{stats?.activeEmployees || 8}</p>
-          <p className="text-[10px] text-emerald-600 mt-1 font-semibold">100% Retained</p>
+          <p className="text-3xl font-black text-slate-900 dark:text-white mt-1">{stats?.activeEmployees || 9}</p>
+          <p className="text-[10px] text-emerald-600 dark:text-emerald-400 mt-1 font-bold">100% Retained</p>
         </Card>
 
-        <Card className="p-5 bg-white border-slate-200">
-          <span className="text-[11px] font-bold text-emerald-800 uppercase tracking-wider">Today's Attendance Rate</span>
-          <p className="text-3xl font-black text-emerald-700 mt-1">{stats?.todayAttendance?.attendanceRate || 88}%</p>
-          <p className="text-[10px] text-slate-400 mt-1">{stats?.todayAttendance?.present + stats?.todayAttendance?.late || 5} Present</p>
+        <Card className="p-5 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800">
+          <span className="text-[11px] font-bold text-emerald-800 dark:text-emerald-400 uppercase tracking-wider">Attendance Rate</span>
+          <p className="text-3xl font-black text-emerald-700 dark:text-emerald-400 mt-1">{stats?.todayAttendance?.attendanceRate || 88}%</p>
+          <p className="text-[10px] text-slate-400 mt-1">{stats?.todayAttendance?.present + stats?.todayAttendance?.late || 6} Present Today</p>
         </Card>
 
-        <Card className="p-5 bg-white border-slate-200">
-          <span className="text-[11px] font-bold text-amber-800 uppercase tracking-wider">Pending Leaves</span>
-          <p className="text-3xl font-black text-amber-600 mt-1">{stats?.pendingLeaves || 0}</p>
-          <p className="text-[10px] text-slate-400 mt-1">Pending HR decision</p>
+        <Card className="p-5 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800">
+          <span className="text-[11px] font-bold text-amber-800 dark:text-amber-400 uppercase tracking-wider">Pending Leaves</span>
+          <p className="text-3xl font-black text-amber-600 dark:text-amber-400 mt-1">{stats?.pendingLeaves || 0}</p>
+          <p className="text-[10px] text-slate-400 mt-1">Pending HR action</p>
         </Card>
 
-        <Card className="p-5 bg-white border-slate-200">
-          <span className="text-[11px] font-bold text-purple-800 uppercase tracking-wider">Monthly Payroll</span>
-          <p className="text-3xl font-black text-slate-900 mt-1 font-mono">
-            ${stats?.payroll?.totalGross ? (stats.payroll.totalGross / 1000).toFixed(1) + 'k' : '$64.8k'}
+        <Card className="p-5 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800">
+          <span className="text-[11px] font-bold text-purple-800 dark:text-purple-400 uppercase tracking-wider">Monthly Payroll</span>
+          <p className="text-3xl font-black text-slate-900 dark:text-white mt-1 font-mono">
+            ₹{stats?.payroll?.totalGross ? (stats.payroll.totalGross / 100000).toFixed(2) + 'L' : '₹10.9L'}
           </p>
-          <p className="text-[10px] text-slate-400 mt-1">Gross cost</p>
+          <p className="text-[10px] text-slate-400 mt-1">Gross INR monthly cost</p>
         </Card>
       </div>
 
@@ -160,7 +160,7 @@ export function ReportsAnalytics() {
         <Card>
           <CardHeader
             title="Headcount by Department"
-            subtitle="Staff distribution across company divisions"
+            subtitle="Staff distribution across company divisions in India"
           />
           <CardContent className="h-72">
             {stats?.departmentDistribution ? (
@@ -170,11 +170,11 @@ export function ReportsAnalytics() {
                   layout="vertical"
                   margin={{ top: 10, right: 20, left: 40, bottom: 0 }}
                 >
-                  <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f1f5f9" />
-                  <XAxis type="number" tickLine={false} axisLine={false} tick={{ fontSize: 12, fill: '#64748b' }} />
-                  <YAxis type="category" dataKey="department" tickLine={false} axisLine={false} tick={{ fontSize: 11, fill: '#334155' }} />
-                  <Tooltip contentStyle={{ borderRadius: '12px', border: '1px solid #e2e8f0' }} />
-                  <Bar dataKey="employee_count" name="Employees" fill="#16a34a" radius={[0, 6, 6, 0]} />
+                  <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#334155" opacity={0.3} />
+                  <XAxis type="number" tickLine={false} axisLine={false} tick={{ fontSize: 12, fill: '#94a3b8' }} />
+                  <YAxis type="category" dataKey="department" tickLine={false} axisLine={false} tick={{ fontSize: 11, fill: '#94a3b8' }} />
+                  <Tooltip contentStyle={{ borderRadius: '12px', backgroundColor: '#0f172a', borderColor: '#334155', color: '#f8fafc' }} />
+                  <Bar dataKey="employee_count" name="Employees" fill="#10b981" radius={[0, 6, 6, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             ) : (
@@ -208,7 +208,7 @@ export function ReportsAnalytics() {
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
-                  <Tooltip contentStyle={{ borderRadius: '12px', border: '1px solid #e2e8f0' }} />
+                  <Tooltip contentStyle={{ borderRadius: '12px', backgroundColor: '#0f172a', borderColor: '#334155', color: '#f8fafc' }} />
                   <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '8px' }} />
                 </PieChart>
               </ResponsiveContainer>
@@ -229,13 +229,13 @@ export function ReportsAnalytics() {
           {stats?.weeklyTrend ? (
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={stats.weeklyTrend} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                <XAxis dataKey="day" tickLine={false} axisLine={false} tick={{ fontSize: 12, fill: '#64748b' }} />
-                <YAxis tickLine={false} axisLine={false} tick={{ fontSize: 12, fill: '#64748b' }} />
-                <Tooltip contentStyle={{ borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }} />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#334155" opacity={0.3} />
+                <XAxis dataKey="day" tickLine={false} axisLine={false} tick={{ fontSize: 12, fill: '#94a3b8' }} />
+                <YAxis tickLine={false} axisLine={false} tick={{ fontSize: 12, fill: '#94a3b8' }} />
+                <Tooltip contentStyle={{ borderRadius: '12px', backgroundColor: '#0f172a', borderColor: '#334155', color: '#f8fafc' }} />
                 <Legend iconType="circle" wrapperStyle={{ fontSize: '12px', paddingTop: '8px' }} />
-                <Bar dataKey="present" name="Present / Late" fill="#16a34a" radius={[6, 6, 0, 0]} />
-                <Bar dataKey="leave" name="On Leave" fill="#9333ea" radius={[6, 6, 0, 0]} />
+                <Bar dataKey="present" name="Present / Late" fill="#10b981" radius={[6, 6, 0, 0]} />
+                <Bar dataKey="leave" name="On Leave" fill="#8b5cf6" radius={[6, 6, 0, 0]} />
                 <Bar dataKey="halfDay" name="Half-day" fill="#3b82f6" radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>

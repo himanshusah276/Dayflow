@@ -147,7 +147,7 @@ export function EmployeeDashboard() {
           isHalfDay: false
         });
         fetchData();
-      }, 1500);
+      }, 1200);
     } catch (err) {
       setLeaveError(err.message || 'Failed to submit leave request.');
     } finally {
@@ -158,18 +158,18 @@ export function EmployeeDashboard() {
   return (
     <div className="space-y-6 max-w-7xl mx-auto pb-12">
       {/* Welcome Banner */}
-      <div className="rounded-3xl bg-gradient-to-r from-slate-900 via-slate-800 to-emerald-950 p-6 sm:p-8 text-white shadow-card relative overflow-hidden">
+      <div className="rounded-3xl bg-gradient-to-r from-slate-900 via-slate-850 to-emerald-950 p-6 sm:p-8 text-white shadow-card relative overflow-hidden border border-emerald-900/30">
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 text-xs font-semibold mb-3">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 text-xs font-bold mb-3">
               <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
-              <span>Good day, {user?.firstName}!</span>
+              <span>Namaste, {user?.firstName}! Welcome to Dayflow India</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
               {user?.firstName} {user?.lastName}
             </h1>
-            <p className="text-sm text-slate-300 mt-1 flex items-center gap-2">
-              <span>{user?.designation}</span> • <span>{user?.department}</span> • <span className="font-mono text-xs bg-slate-800 px-2 py-0.5 rounded">{user?.employeeId}</span>
+            <p className="text-sm text-slate-300 mt-1 flex flex-wrap items-center gap-2 font-medium">
+              <span>{user?.designation}</span> • <span>{user?.department}</span> • <span className="font-mono text-xs bg-slate-800 px-2 py-0.5 rounded border border-slate-700">{user?.employeeId}</span>
             </p>
           </div>
 
@@ -179,7 +179,7 @@ export function EmployeeDashboard() {
               variant="outline"
               size="md"
               onClick={() => setShowApplyLeaveModal(true)}
-              className="bg-white/10 text-white border-white/20 hover:bg-white/20"
+              className="bg-white/10 text-white border-white/20 hover:bg-white/20 font-bold cursor-pointer"
               icon={CalendarDays}
             >
               Apply Leave
@@ -188,10 +188,10 @@ export function EmployeeDashboard() {
               <Button
                 variant="primary"
                 size="md"
-                className="font-bold shadow-md shadow-emerald-500/30"
+                className="font-bold shadow-md shadow-emerald-500/30 cursor-pointer"
                 icon={DollarSign}
               >
-                View Salary Slips
+                View ₹ Payslips
               </Button>
             </Link>
           </div>
@@ -201,10 +201,10 @@ export function EmployeeDashboard() {
       {/* Main Grid: Check-in Card & Metrics */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Attendance Check-in Action Card */}
-        <Card className="lg:col-span-1 border-emerald-100 shadow-sm relative overflow-hidden bg-gradient-to-b from-white to-emerald-50/20">
+        <Card className="lg:col-span-1 border-emerald-100 dark:border-slate-800 shadow-sm relative overflow-hidden bg-gradient-to-b from-white to-emerald-50/20 dark:from-slate-900 dark:to-emerald-950/20">
           <CardHeader
             title="Today's Attendance"
-            subtitle={new Date().toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' })}
+            subtitle={new Date().toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' })}
             action={
               todayAttendance?.todayRecord?.status ? (
                 <Badge variant={todayAttendance.todayRecord.status}>
@@ -217,25 +217,25 @@ export function EmployeeDashboard() {
           />
           <CardContent className="space-y-5">
             {/* Live Clock / Duration Display */}
-            <div className="text-center py-4 bg-slate-50/80 rounded-2xl border border-slate-100">
-              <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">
-                {todayAttendance?.isCheckedIn ? 'Active Work Duration' : todayAttendance?.isCheckedOut ? 'Work Shift Completed' : 'Ready to Start Shift'}
+            <div className="text-center py-4 bg-slate-50/80 dark:bg-slate-800/80 rounded-2xl border border-slate-100 dark:border-slate-750">
+              <p className="text-xs font-bold text-slate-400 dark:text-slate-400 uppercase tracking-wider">
+                {todayAttendance?.isCheckedIn ? 'Active Shift Timer' : todayAttendance?.isCheckedOut ? 'Work Shift Completed' : 'Ready to Start Shift'}
               </p>
-              <div className="text-4xl font-black font-mono text-slate-900 tracking-tight mt-1">
+              <div className="text-4xl font-black font-mono text-slate-900 dark:text-white tracking-tight mt-1">
                 {todayAttendance?.isCheckedIn
                   ? elapsedTime
                   : todayAttendance?.todayRecord?.work_duration_minutes
                   ? `${Math.floor(todayAttendance.todayRecord.work_duration_minutes / 60)}h ${todayAttendance.todayRecord.work_duration_minutes % 60}m`
                   : '00:00:00'}
               </div>
-              <div className="mt-2 text-xs text-slate-500">
+              <div className="mt-2 text-xs text-slate-500 dark:text-slate-400">
                 {todayAttendance?.todayRecord?.check_in_time ? (
-                  <span>Checked in at <strong className="text-slate-800">{todayAttendance.todayRecord.check_in_time}</strong></span>
+                  <span>Checked in at <strong className="text-slate-800 dark:text-slate-200">{todayAttendance.todayRecord.check_in_time}</strong></span>
                 ) : (
-                  <span>Standard shift: 09:00 AM – 06:00 PM</span>
+                  <span>Standard Shift: 09:30 AM – 06:30 PM IST</span>
                 )}
                 {todayAttendance?.todayRecord?.check_out_time && (
-                  <span> • Out at <strong className="text-slate-800">{todayAttendance.todayRecord.check_out_time}</strong></span>
+                  <span> • Out at <strong className="text-slate-800 dark:text-slate-200">{todayAttendance.todayRecord.check_out_time}</strong></span>
                 )}
               </div>
             </div>
@@ -246,7 +246,7 @@ export function EmployeeDashboard() {
                 <Button
                   variant="primary"
                   size="lg"
-                  className="w-full font-bold shadow-md shadow-emerald-600/30"
+                  className="w-full font-bold shadow-md shadow-emerald-600/30 cursor-pointer"
                   isLoading={attendanceLoading}
                   onClick={handleCheckIn}
                   icon={LogIn}
@@ -259,7 +259,7 @@ export function EmployeeDashboard() {
                 <Button
                   variant="danger"
                   size="lg"
-                  className="w-full font-bold shadow-md shadow-rose-600/30"
+                  className="w-full font-bold shadow-md shadow-rose-600/30 cursor-pointer"
                   isLoading={attendanceLoading}
                   onClick={handleCheckOut}
                   icon={LogOut}
@@ -269,18 +269,18 @@ export function EmployeeDashboard() {
               )}
 
               {todayAttendance?.isCheckedOut && (
-                <div className="p-3 bg-emerald-50 rounded-xl border border-emerald-200 text-center">
-                  <p className="text-xs font-semibold text-emerald-800 flex items-center justify-center gap-1.5">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                    You are checked out for today. Great work!
+                <div className="p-3 bg-emerald-50 dark:bg-emerald-950/40 rounded-xl border border-emerald-200 dark:border-emerald-800 text-center">
+                  <p className="text-xs font-semibold text-emerald-800 dark:text-emerald-300 flex items-center justify-center gap-1.5">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                    You have checked out for today. Great work!
                   </p>
                 </div>
               )}
             </div>
 
-            <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-              <Link to="/attendance" className="text-emerald-600 hover:text-emerald-700 font-semibold flex items-center gap-1">
-                View attendance history <ArrowRight className="w-3 h-3" />
+            <div className="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+              <Link to="/attendance" className="text-emerald-600 dark:text-emerald-400 hover:underline font-bold flex items-center gap-1">
+                View attendance logs <ArrowRight className="w-3 h-3" />
               </Link>
             </div>
           </CardContent>
@@ -290,15 +290,15 @@ export function EmployeeDashboard() {
         <div className="lg:col-span-2 space-y-6">
           {/* Leave Balances Grid */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
-            <Card className="p-4 bg-gradient-to-br from-emerald-50/50 to-white border-emerald-100">
-              <p className="text-xs font-bold text-emerald-800 uppercase tracking-wider">Paid Leave</p>
+            <Card className="p-4 bg-gradient-to-br from-emerald-50/50 to-white dark:from-emerald-950/20 dark:to-slate-900 border-emerald-100 dark:border-emerald-800/40">
+              <p className="text-xs font-bold text-emerald-800 dark:text-emerald-400 uppercase tracking-wider">Paid Leave</p>
               <div className="mt-2 flex items-baseline justify-between">
-                <span className="text-2xl font-black text-slate-900">
+                <span className="text-2xl font-black text-slate-900 dark:text-white">
                   {(leaveBalance?.paid_leave_total || 18) - (leaveBalance?.paid_leave_used || 0)}
                 </span>
                 <span className="text-xs text-slate-400">/ {leaveBalance?.paid_leave_total || 18} left</span>
               </div>
-              <div className="w-full bg-slate-100 h-1.5 rounded-full mt-2 overflow-hidden">
+              <div className="w-full bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full mt-2 overflow-hidden">
                 <div
                   className="bg-emerald-500 h-full rounded-full"
                   style={{
@@ -308,15 +308,15 @@ export function EmployeeDashboard() {
               </div>
             </Card>
 
-            <Card className="p-4 bg-gradient-to-br from-blue-50/50 to-white border-blue-100">
-              <p className="text-xs font-bold text-blue-800 uppercase tracking-wider">Sick Leave</p>
+            <Card className="p-4 bg-gradient-to-br from-blue-50/50 to-white dark:from-blue-950/20 dark:to-slate-900 border-blue-100 dark:border-blue-800/40">
+              <p className="text-xs font-bold text-blue-800 dark:text-blue-400 uppercase tracking-wider">Sick Leave</p>
               <div className="mt-2 flex items-baseline justify-between">
-                <span className="text-2xl font-black text-slate-900">
+                <span className="text-2xl font-black text-slate-900 dark:text-white">
                   {(leaveBalance?.sick_leave_total || 10) - (leaveBalance?.sick_leave_used || 0)}
                 </span>
                 <span className="text-xs text-slate-400">/ {leaveBalance?.sick_leave_total || 10} left</span>
               </div>
-              <div className="w-full bg-slate-100 h-1.5 rounded-full mt-2 overflow-hidden">
+              <div className="w-full bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full mt-2 overflow-hidden">
                 <div
                   className="bg-blue-500 h-full rounded-full"
                   style={{
@@ -326,15 +326,15 @@ export function EmployeeDashboard() {
               </div>
             </Card>
 
-            <Card className="p-4 bg-gradient-to-br from-purple-50/50 to-white border-purple-100">
-              <p className="text-xs font-bold text-purple-800 uppercase tracking-wider">Casual Leave</p>
+            <Card className="p-4 bg-gradient-to-br from-purple-50/50 to-white dark:from-purple-950/20 dark:to-slate-900 border-purple-100 dark:border-purple-800/40">
+              <p className="text-xs font-bold text-purple-800 dark:text-purple-400 uppercase tracking-wider">Casual Leave</p>
               <div className="mt-2 flex items-baseline justify-between">
-                <span className="text-2xl font-black text-slate-900">
+                <span className="text-2xl font-black text-slate-900 dark:text-white">
                   {(leaveBalance?.casual_leave_total || 8) - (leaveBalance?.casual_leave_used || 0)}
                 </span>
                 <span className="text-xs text-slate-400">/ {leaveBalance?.casual_leave_total || 8} left</span>
               </div>
-              <div className="w-full bg-slate-100 h-1.5 rounded-full mt-2 overflow-hidden">
+              <div className="w-full bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full mt-2 overflow-hidden">
                 <div
                   className="bg-purple-500 h-full rounded-full"
                   style={{
@@ -344,16 +344,16 @@ export function EmployeeDashboard() {
               </div>
             </Card>
 
-            <Card className="p-4 bg-gradient-to-br from-amber-50/50 to-white border-amber-100">
-              <p className="text-xs font-bold text-amber-800 uppercase tracking-wider">Work Hours</p>
+            <Card className="p-4 bg-gradient-to-br from-amber-50/50 to-white dark:from-amber-950/20 dark:to-slate-900 border-amber-100 dark:border-amber-800/40">
+              <p className="text-xs font-bold text-amber-800 dark:text-amber-400 uppercase tracking-wider">Logged Hours</p>
               <div className="mt-2 flex items-baseline justify-between">
-                <span className="text-2xl font-black text-slate-900">
-                  {attendanceSummary?.totalWorkMinutes ? Math.floor(attendanceSummary.totalWorkMinutes / 60) : '168'}h
+                <span className="text-2xl font-black text-slate-900 dark:text-white">
+                  {attendanceSummary?.totalWorkMinutes ? Math.floor(attendanceSummary.totalWorkMinutes / 60) : '172'}h
                 </span>
                 <span className="text-xs text-slate-400">this month</span>
               </div>
-              <p className="text-[10px] text-slate-500 mt-2 font-medium">
-                {attendanceSummary?.presentDays || 21} days logged
+              <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-2 font-bold">
+                {attendanceSummary?.presentDays || 21} working days logged
               </p>
             </Card>
           </div>
@@ -364,32 +364,32 @@ export function EmployeeDashboard() {
               title="Recent Leave Requests"
               subtitle="Your submitted time-off applications & approval statuses"
               action={
-                <Link to="/leaves" className="text-xs text-emerald-600 hover:text-emerald-700 font-semibold flex items-center gap-1">
+                <Link to="/leaves" className="text-xs text-emerald-600 dark:text-emerald-400 hover:underline font-bold flex items-center gap-1">
                   View all <ArrowRight className="w-3.5 h-3.5" />
                 </Link>
               }
             />
-            <div className="divide-y divide-slate-100">
+            <div className="divide-y divide-slate-100 dark:divide-slate-800">
               {recentRequests.length === 0 ? (
                 <div className="p-6 text-center text-xs text-slate-400">No leave requests found.</div>
               ) : (
                 recentRequests.map((req) => (
-                  <div key={req.id} className="p-4 flex items-center justify-between gap-4 hover:bg-slate-50/50 transition-colors">
+                  <div key={req.id} className="p-4 flex items-center justify-between gap-4 hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition-colors">
                     <div className="flex items-start gap-3">
-                      <div className="p-2.5 rounded-xl bg-slate-100 text-slate-700 mt-0.5">
-                        <CalendarDays className="w-4 h-4 text-emerald-600" />
+                      <div className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 mt-0.5">
+                        <CalendarDays className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                       </div>
                       <div>
                         <div className="flex items-center gap-2">
-                          <p className="text-xs font-bold text-slate-900">{req.leave_type} Leave</p>
+                          <p className="text-xs font-bold text-slate-900 dark:text-white">{req.leave_type} Leave</p>
                           <Badge variant={req.status} size="sm">{req.status}</Badge>
                         </div>
-                        <p className="text-xs text-slate-500 mt-0.5">
+                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                           {req.start_date} to {req.end_date} • <strong>{req.total_days} {req.total_days === 1 ? 'day' : 'days'}</strong>
                         </p>
                         {req.admin_remark && (
-                          <p className="text-[11px] text-emerald-700 font-medium mt-1 bg-emerald-50 px-2 py-0.5 rounded-md inline-block">
-                            HR: "{req.admin_remark}"
+                          <p className="text-[11px] text-emerald-700 dark:text-emerald-300 font-medium mt-1 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-md inline-block border border-emerald-200/50 dark:border-emerald-800/50">
+                            HR Note: "{req.admin_remark}"
                           </p>
                         )}
                       </div>
@@ -405,30 +405,30 @@ export function EmployeeDashboard() {
       {/* Company Announcements section */}
       <Card>
         <CardHeader
-          title="Company Announcements & Updates"
-          subtitle="Latest organizational news and team notices"
+          title="Company Announcements & Festive Updates"
+          subtitle="Latest organizational notices across Indian branches"
         />
-        <div className="divide-y divide-slate-100">
+        <div className="divide-y divide-slate-100 dark:divide-slate-800">
           {announcements.map((ann) => (
-            <div key={ann.id} className="p-5 flex items-start gap-4 hover:bg-slate-50/50 transition-colors">
-              <div className="p-2.5 rounded-2xl bg-emerald-50 text-emerald-700 shrink-0">
-                <Megaphone className="w-5 h-5 text-emerald-600" />
+            <div key={ann.id} className="p-5 flex items-start gap-4 hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition-colors">
+              <div className="p-2.5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 shrink-0">
+                <Megaphone className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
               </div>
               <div className="flex-1">
-                <div className="flex items-center gap-2">
-                  <h4 className="text-sm font-bold text-slate-900">{ann.title}</h4>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h4 className="text-sm font-bold text-slate-900 dark:text-white">{ann.title}</h4>
                   {ann.is_pinned === 1 && (
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 uppercase">
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 border border-amber-200/50 dark:border-amber-800/50 uppercase">
                       Pinned
                     </span>
                   )}
-                  <span className="text-[10px] font-medium px-2 py-0.5 rounded bg-slate-100 text-slate-600">
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
                     {ann.category}
                   </span>
                 </div>
-                <p className="text-xs text-slate-600 mt-1.5 leading-relaxed">{ann.content}</p>
-                <p className="text-[10px] text-slate-400 mt-2">
-                  Posted by <strong className="text-slate-700">{ann.author_name}</strong> • {new Date(ann.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                <p className="text-xs text-slate-600 dark:text-slate-300 mt-1.5 leading-relaxed">{ann.content}</p>
+                <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-2">
+                  Posted by <strong className="text-slate-700 dark:text-slate-300">{ann.author_name}</strong> • {new Date(ann.created_at).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' })}
                 </p>
               </div>
             </div>
@@ -441,63 +441,63 @@ export function EmployeeDashboard() {
         isOpen={showApplyLeaveModal}
         onClose={() => setShowApplyLeaveModal(false)}
         title="Apply for Leave / Time-Off"
-        subtitle="Submit a new leave application for HR approval"
+        subtitle="Submit a new time-off application for HR approval"
       >
         {leaveError && (
-          <div className="mb-4 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2">
+          <div className="mb-4 p-3 rounded-xl bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-xs flex items-center gap-2">
             <AlertCircle className="w-4 h-4 shrink-0" />
             <span>{leaveError}</span>
           </div>
         )}
 
         {leaveSuccess && (
-          <div className="mb-4 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" />
+          <div className="mb-4 p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-xs flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
             <span>{leaveSuccess}</span>
           </div>
         )}
 
         <form onSubmit={handleApplyLeave} className="space-y-4">
           <div>
-            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
               Leave Type <span className="text-rose-500">*</span>
             </label>
             <select
               value={leaveFormData.leaveType}
               onChange={(e) => setLeaveFormData({ ...leaveFormData, leaveType: e.target.value })}
-              className="block w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className="block w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-750 focus:outline-none focus:ring-2 focus:ring-emerald-500"
               required
             >
-              <option value="Paid">Paid Annual Leave ({(leaveBalance?.paid_leave_total || 18) - (leaveBalance?.paid_leave_used || 0)} days remaining)</option>
-              <option value="Sick">Sick Leave ({(leaveBalance?.sick_leave_total || 10) - (leaveBalance?.sick_leave_used || 0)} days remaining)</option>
-              <option value="Casual">Casual Leave ({(leaveBalance?.casual_leave_total || 8) - (leaveBalance?.casual_leave_used || 0)} days remaining)</option>
+              <option value="Paid">Paid Annual / Privilege Leave ({(leaveBalance?.paid_leave_total || 18) - (leaveBalance?.paid_leave_used || 0)} days left)</option>
+              <option value="Sick">Sick / Medical Leave ({(leaveBalance?.sick_leave_total || 10) - (leaveBalance?.sick_leave_used || 0)} days left)</option>
+              <option value="Casual">Casual / Festival Leave ({(leaveBalance?.casual_leave_total || 8) - (leaveBalance?.casual_leave_used || 0)} days left)</option>
               <option value="Unpaid">Unpaid Leave</option>
             </select>
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
                 Start Date <span className="text-rose-500">*</span>
               </label>
               <input
                 type="date"
                 value={leaveFormData.startDate}
                 onChange={(e) => setLeaveFormData({ ...leaveFormData, startDate: e.target.value })}
-                className="block w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                className="block w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-750 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
                 End Date <span className="text-rose-500">*</span>
               </label>
               <input
                 type="date"
                 value={leaveFormData.endDate}
                 onChange={(e) => setLeaveFormData({ ...leaveFormData, endDate: e.target.value })}
-                className="block w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                className="block w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-750 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 required
               />
             </div>
@@ -511,13 +511,13 @@ export function EmployeeDashboard() {
               onChange={(e) => setLeaveFormData({ ...leaveFormData, isHalfDay: e.target.checked })}
               className="rounded text-emerald-600 focus:ring-emerald-500 h-4 w-4"
             />
-            <label htmlFor="halfDayCheck" className="text-xs font-medium text-slate-700">
-              This is a Half-day leave request (0.5 day)
+            <label htmlFor="halfDayCheck" className="text-xs font-bold text-slate-700 dark:text-slate-300 cursor-pointer">
+              This is a Half-day leave application (0.5 day)
             </label>
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
               Reason / Remark <span className="text-rose-500">*</span>
             </label>
             <textarea
@@ -525,7 +525,7 @@ export function EmployeeDashboard() {
               value={leaveFormData.reason}
               onChange={(e) => setLeaveFormData({ ...leaveFormData, reason: e.target.value })}
               placeholder="Explain the reason for time-off..."
-              className="block w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className="block w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-750 focus:outline-none focus:ring-2 focus:ring-emerald-500"
               required
             />
           </div>

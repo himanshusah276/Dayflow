@@ -4,8 +4,10 @@ const API_BASE = '/api';
 
 export async function request(endpoint, options = {}) {
   const token = localStorage.getItem('dayflow_token');
+  const isFormData = options.body instanceof FormData;
+
   const headers = {
-    'Content-Type': 'application/json',
+    ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
     ...options.headers,
   };
@@ -15,7 +17,7 @@ export async function request(endpoint, options = {}) {
     headers,
   };
 
-  if (options.body && typeof options.body === 'object' && !(options.body instanceof FormData)) {
+  if (options.body && typeof options.body === 'object' && !isFormData) {
     config.body = JSON.stringify(options.body);
   }
 
@@ -49,7 +51,7 @@ export const api = {
   login: (credentials) => request('/auth/login', { method: 'POST', body: credentials }),
   register: (userData) => request('/auth/register', { method: 'POST', body: userData }),
   verifyEmail: (verificationData) => request('/auth/verify-email', { method: 'POST', body: verificationData }),
-  resendCode: (email) => request('/auth/resend-code', { method: 'POST', body: { email } }),
+  resendCode: (identifier) => request('/auth/resend-code', { method: 'POST', body: { identifier } }),
   quickLogin: (role) => request(`/auth/quick-login?role=${role}`),
   getMe: () => request('/auth/me'),
 
@@ -62,7 +64,9 @@ export const api = {
   updateProfile: (id, data) => request(`/employees/${id}`, { method: 'PUT', body: data }),
   createEmployee: (data) => request('/employees', { method: 'POST', body: data }),
   deleteEmployee: (id) => request(`/employees/${id}`, { method: 'DELETE' }),
-  uploadDocument: (id, docData) => request(`/employees/${id}/documents`, { method: 'POST', body: docData }),
+  uploadAvatar: (id, formData) => request(`/employees/${id}/avatar`, { method: 'POST', body: formData }),
+  uploadDocument: (id, formData) => request(`/employees/${id}/documents`, { method: 'POST', body: formData }),
+  deleteDocument: (empId, docId) => request(`/employees/${empId}/documents/${docId}`, { method: 'DELETE' }),
 
   // Attendance
   getTodayAttendance: () => request('/attendance/today'),

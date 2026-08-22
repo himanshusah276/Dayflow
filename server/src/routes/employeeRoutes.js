@@ -6,7 +6,8 @@ import {
   createEmployee,
   deleteEmployee,
   uploadAvatar,
-  uploadDocument
+  uploadDocument,
+  deleteDocument
 } from '../controllers/employeeController.js';
 import { authenticate } from '../middleware/auth.js';
 import { requireHRAdmin } from '../middleware/rbac.js';
@@ -19,9 +20,10 @@ router.get('/', authenticate, getEmployees);
 router.get('/:id', authenticate, getEmployeeById);
 router.put('/:id', authenticate, updateProfile);
 
-// File uploads
+// File uploads & document management
 router.post('/:id/avatar', authenticate, uploadAvatarMiddleware, uploadAvatar);
 router.post('/:id/documents', authenticate, uploadDocumentMiddleware, uploadDocument);
+router.delete('/:id/documents/:docId', authenticate, deleteDocument);
 
 // Admin-only actions
 router.post('/', authenticate, requireHRAdmin, createEmployee);

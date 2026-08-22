@@ -98,30 +98,30 @@ export function AdminDashboard() {
   return (
     <div className="space-y-6 max-w-7xl mx-auto pb-12">
       {/* Top Banner */}
-      <div className="rounded-3xl bg-gradient-to-r from-slate-900 via-slate-800 to-emerald-950 p-6 sm:p-8 text-white shadow-card relative overflow-hidden">
+      <div className="rounded-3xl bg-gradient-to-r from-slate-900 via-slate-850 to-emerald-950 p-6 sm:p-8 text-white shadow-card relative overflow-hidden border border-emerald-900/30">
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 text-xs font-semibold mb-3">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 text-xs font-bold mb-3">
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-              <span>HR Management Center</span>
+              <span>HR & People Operations Control Center</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
-              Company Overview & Operations
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
+              Workforce Operations & Overview (India)
             </h1>
             <p className="text-sm text-slate-300 mt-1">
-              Live workforce attendance, pending approvals, and compensation overview
+              Live attendance logs, pending leave approvals, and monthly INR (₹) payroll disbursement
             </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
             <Link to="/admin/employees">
-              <Button variant="outline" size="md" className="bg-white/10 text-white border-white/20 hover:bg-white/20" icon={Users}>
+              <Button variant="outline" size="md" className="bg-white/10 text-white border-white/20 hover:bg-white/20 font-bold cursor-pointer" icon={Users}>
                 Add Employee
               </Button>
             </Link>
             <Link to="/admin/payroll">
-              <Button variant="primary" size="md" className="font-bold shadow-md shadow-emerald-500/30" icon={DollarSign}>
-                Process Payroll
+              <Button variant="primary" size="md" className="font-bold shadow-md shadow-emerald-500/30 cursor-pointer" icon={DollarSign}>
+                Process ₹ Payroll
               </Button>
             </Link>
           </div>
@@ -130,35 +130,35 @@ export function AdminDashboard() {
 
       {/* Metric Cards Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="p-5 bg-white border-slate-200/80">
+        <Card className="p-5 bg-white dark:bg-slate-900 border-slate-200/80 dark:border-slate-800">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Headcount</span>
-            <div className="p-2 rounded-xl bg-blue-50 text-blue-600">
+            <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Total Headcount</span>
+            <div className="p-2 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400">
               <Users className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3 flex items-baseline justify-between">
-            <span className="text-3xl font-black text-slate-900">{stats?.activeEmployees || 8}</span>
-            <span className="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">
+            <span className="text-3xl font-black text-slate-900 dark:text-white">{stats?.activeEmployees || 9}</span>
+            <span className="text-xs font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-full border border-emerald-200/50 dark:border-emerald-800/50">
               100% Active
             </span>
           </div>
-          <p className="text-[11px] text-slate-400 mt-1">Across 6 departments</p>
+          <p className="text-[11px] text-slate-400 mt-1">Across 6 departments in India</p>
         </Card>
 
-        <Card className="p-5 bg-white border-slate-200/80">
+        <Card className="p-5 bg-white dark:bg-slate-900 border-slate-200/80 dark:border-slate-800">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Today's Attendance</span>
-            <div className="p-2 rounded-xl bg-emerald-50 text-emerald-600">
+            <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Today's Attendance</span>
+            <div className="p-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400">
               <Clock className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3 flex items-baseline justify-between">
-            <span className="text-3xl font-black text-emerald-700">
-              {stats?.todayAttendance?.present + stats?.todayAttendance?.late || 5}
+            <span className="text-3xl font-black text-emerald-700 dark:text-emerald-400">
+              {stats?.todayAttendance?.present + stats?.todayAttendance?.late || 6}
             </span>
-            <span className="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">
-              {stats?.todayAttendance?.attendanceRate || 85}% Rate
+            <span className="text-xs font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-full border border-emerald-200/50 dark:border-emerald-800/50">
+              {stats?.todayAttendance?.attendanceRate || 88}% Rate
             </span>
           </div>
           <p className="text-[11px] text-slate-400 mt-1">
@@ -166,43 +166,43 @@ export function AdminDashboard() {
           </p>
         </Card>
 
-        <Card className="p-5 bg-white border-slate-200/80">
+        <Card className="p-5 bg-white dark:bg-slate-900 border-slate-200/80 dark:border-slate-800">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Pending Leaves</span>
-            <div className="p-2 rounded-xl bg-amber-50 text-amber-600">
+            <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Pending Leaves</span>
+            <div className="p-2 rounded-xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400">
               <CalendarDays className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3 flex items-baseline justify-between">
-            <span className="text-3xl font-black text-amber-600">
+            <span className="text-3xl font-black text-amber-600 dark:text-amber-400">
               {pendingLeaves.length}
             </span>
             {pendingLeaves.length > 0 && (
-              <span className="text-xs font-semibold text-amber-800 bg-amber-50 px-2 py-0.5 rounded-full animate-pulse">
-                Action Required
+              <span className="text-xs font-bold text-amber-800 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/60 px-2 py-0.5 rounded-full animate-pulse border border-amber-200/50 dark:border-amber-800/50">
+                Action Needed
               </span>
             )}
           </div>
           <p className="text-[11px] text-slate-400 mt-1">Awaiting HR approval</p>
         </Card>
 
-        <Card className="p-5 bg-white border-slate-200/80">
+        <Card className="p-5 bg-white dark:bg-slate-900 border-slate-200/80 dark:border-slate-800">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Monthly Payroll</span>
-            <div className="p-2 rounded-xl bg-purple-50 text-purple-600">
+            <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Monthly Payroll Run</span>
+            <div className="p-2 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400">
               <DollarSign className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3 flex items-baseline justify-between">
-            <span className="text-2xl sm:text-3xl font-black text-slate-900">
-              ${stats?.payroll?.totalGross ? (stats.payroll.totalGross / 1000).toFixed(1) + 'k' : '$64.8k'}
+            <span className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white font-mono">
+              ₹{stats?.payroll?.totalGross ? (stats.payroll.totalGross / 100000).toFixed(2) + 'L' : '₹10.9L'}
             </span>
-            <span className="text-xs font-bold text-purple-700 bg-purple-50 px-2 py-0.5 rounded-full font-mono">
-              USD
+            <span className="text-xs font-bold text-purple-700 dark:text-purple-300 bg-purple-50 dark:bg-purple-950/60 px-2 py-0.5 rounded-full font-mono border border-purple-200/50 dark:border-purple-800/50">
+              INR ₹
             </span>
           </div>
           <p className="text-[11px] text-slate-400 mt-1">
-            Net: ${stats?.payroll?.totalNet ? (stats.payroll.totalNet / 1000).toFixed(1) + 'k' : '$52.2k'}
+            Net: ₹{stats?.payroll?.totalNet ? (stats.payroll.totalNet / 100000).toFixed(2) + 'L' : '₹9.4L'}
           </p>
         </Card>
       </div>
@@ -215,7 +215,7 @@ export function AdminDashboard() {
             title="Weekly Workforce Attendance Trends"
             subtitle="Past 7 calendar days attendance vs leaves taken"
             action={
-              <Link to="/admin/attendance" className="text-xs text-emerald-600 hover:text-emerald-700 font-semibold flex items-center gap-1">
+              <Link to="/admin/attendance" className="text-xs text-emerald-600 dark:text-emerald-400 hover:underline font-bold flex items-center gap-1">
                 Full Monitor <ArrowRight className="w-3.5 h-3.5" />
               </Link>
             }
@@ -224,15 +224,15 @@ export function AdminDashboard() {
             {stats?.weeklyTrend ? (
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={stats.weeklyTrend} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                  <XAxis dataKey="day" tickLine={false} axisLine={false} tick={{ fontSize: 12, fill: '#64748b' }} />
-                  <YAxis tickLine={false} axisLine={false} tick={{ fontSize: 12, fill: '#64748b' }} />
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#334155" opacity={0.3} />
+                  <XAxis dataKey="day" tickLine={false} axisLine={false} tick={{ fontSize: 12, fill: '#94a3b8' }} />
+                  <YAxis tickLine={false} axisLine={false} tick={{ fontSize: 12, fill: '#94a3b8' }} />
                   <Tooltip
-                    contentStyle={{ borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}
+                    contentStyle={{ borderRadius: '12px', backgroundColor: '#0f172a', borderColor: '#334155', color: '#f8fafc' }}
                   />
                   <Legend iconType="circle" wrapperStyle={{ fontSize: '12px', paddingTop: '8px' }} />
-                  <Bar dataKey="present" name="Present / Late" fill="#16a34a" radius={[6, 6, 0, 0]} />
-                  <Bar dataKey="leave" name="On Leave" fill="#9333ea" radius={[6, 6, 0, 0]} />
+                  <Bar dataKey="present" name="Present / Late" fill="#10b981" radius={[6, 6, 0, 0]} />
+                  <Bar dataKey="leave" name="On Leave" fill="#a855f7" radius={[6, 6, 0, 0]} />
                   <Bar dataKey="halfDay" name="Half-day" fill="#3b82f6" radius={[6, 6, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
@@ -245,45 +245,45 @@ export function AdminDashboard() {
         </Card>
 
         {/* Quick Pending Leave Approvals Widget */}
-        <Card className="lg:col-span-1 border-amber-200/70 bg-gradient-to-b from-white to-amber-50/20">
+        <Card className="lg:col-span-1 border-amber-200/70 dark:border-amber-900/40 bg-gradient-to-b from-white to-amber-50/20 dark:from-slate-900 dark:to-amber-950/10">
           <CardHeader
-            title="Pending Approvals"
-            subtitle={`${pendingLeaves.length} requests awaiting your review`}
+            title="Pending Leave Approvals"
+            subtitle={`${pendingLeaves.length} requests awaiting HR action`}
             action={
-              <Link to="/admin/leaves" className="text-xs text-emerald-600 hover:text-emerald-700 font-semibold">
+              <Link to="/admin/leaves" className="text-xs text-emerald-600 dark:text-emerald-400 hover:underline font-bold">
                 View all
               </Link>
             }
           />
-          <div className="divide-y divide-slate-100 max-h-80 overflow-y-auto">
+          <div className="divide-y divide-slate-100 dark:divide-slate-800 max-h-80 overflow-y-auto">
             {pendingLeaves.length === 0 ? (
               <div className="p-8 text-center">
                 <CheckCircle2 className="w-8 h-8 text-emerald-500 mx-auto mb-2" />
-                <p className="text-xs font-bold text-slate-700">All caught up!</p>
+                <p className="text-xs font-bold text-slate-700 dark:text-slate-300">All caught up!</p>
                 <p className="text-[11px] text-slate-400 mt-0.5">No pending leave requests at this time.</p>
               </div>
             ) : (
               pendingLeaves.map((req) => (
-                <div key={req.id} className="p-4 space-y-2 hover:bg-slate-50/50 transition-colors">
+                <div key={req.id} className="p-4 space-y-2 hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition-colors">
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex items-center gap-2">
                       <img
                         src={req.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${req.employee_id}`}
                         alt={req.first_name}
-                        className="w-7 h-7 rounded-lg object-cover ring-1 ring-slate-200"
+                        className="w-7 h-7 rounded-lg object-cover ring-1 ring-slate-200 dark:ring-slate-700"
                       />
                       <div>
-                        <p className="text-xs font-bold text-slate-900">{req.first_name} {req.last_name}</p>
-                        <p className="text-[10px] text-slate-500">{req.department}</p>
+                        <p className="text-xs font-bold text-slate-900 dark:text-white">{req.first_name} {req.last_name}</p>
+                        <p className="text-[10px] text-slate-500 dark:text-slate-400">{req.department}</p>
                       </div>
                     </div>
                     <Badge variant="Pending" size="sm">{req.leave_type}</Badge>
                   </div>
 
-                  <p className="text-xs text-slate-600">
+                  <p className="text-xs text-slate-600 dark:text-slate-300">
                     <strong>{req.total_days} {req.total_days === 1 ? 'day' : 'days'}</strong> ({req.start_date} to {req.end_date})
                   </p>
-                  <p className="text-[11px] text-slate-500 line-clamp-1 italic">
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-1 italic">
                     "{req.reason}"
                   </p>
 
@@ -291,7 +291,7 @@ export function AdminDashboard() {
                     <Button
                       variant="success"
                       size="sm"
-                      className="flex-1 text-xs"
+                      className="flex-1 text-xs font-bold"
                       onClick={() => openReviewModal(req, 'Approved')}
                     >
                       Approve
@@ -299,7 +299,7 @@ export function AdminDashboard() {
                     <Button
                       variant="danger"
                       size="sm"
-                      className="flex-1 text-xs"
+                      className="flex-1 text-xs font-bold"
                       onClick={() => openReviewModal(req, 'Rejected')}
                     >
                       Reject
@@ -316,44 +316,46 @@ export function AdminDashboard() {
       <Card>
         <CardHeader
           title="Employee Directory Roster"
-          subtitle="Team members across all active branches & departments"
+          subtitle="Team members across all active branches & departments in India"
           action={
-            <Link to="/admin/employees" className="text-xs text-emerald-600 hover:text-emerald-700 font-semibold flex items-center gap-1">
+            <Link to="/admin/employees" className="text-xs text-emerald-600 dark:text-emerald-400 hover:underline font-bold flex items-center gap-1">
               View full directory <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           }
         />
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-slate-50/70 border-b border-slate-100 text-slate-500 font-bold uppercase tracking-wider">
+            <thead className="bg-slate-50/70 dark:bg-slate-800/60 border-b border-slate-100 dark:border-slate-800 text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider">
               <tr>
                 <th className="px-6 py-3.5">Employee</th>
                 <th className="px-6 py-3.5">Department</th>
                 <th className="px-6 py-3.5">Designation</th>
-                <th className="px-6 py-3.5">Gross Pay</th>
+                <th className="px-6 py-3.5">Gross CTC</th>
                 <th className="px-6 py-3.5">Status</th>
                 <th className="px-6 py-3.5 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
               {employees.map((emp) => (
-                <tr key={emp.id} className="hover:bg-slate-50/60 transition-colors">
+                <tr key={emp.id} className="hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition-colors">
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
                       <img
                         src={emp.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${emp.employee_id}`}
                         alt={emp.first_name}
-                        className="w-8 h-8 rounded-xl object-cover ring-1 ring-slate-200"
+                        className="w-8 h-8 rounded-xl object-cover ring-1 ring-slate-200 dark:ring-slate-700"
                       />
                       <div>
-                        <p className="font-bold text-slate-900 text-xs">{emp.first_name} {emp.last_name}</p>
+                        <p className="font-bold text-slate-900 dark:text-white text-xs">{emp.first_name} {emp.last_name}</p>
                         <p className="text-[11px] text-slate-400 font-mono">{emp.employee_id} • {emp.email}</p>
                       </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4 font-semibold text-slate-700">{emp.department}</td>
-                  <td className="px-6 py-4 text-slate-600">{emp.designation}</td>
-                  <td className="px-6 py-4 font-bold text-slate-800">${emp.gross_salary?.toLocaleString() || '—'}</td>
+                  <td className="px-6 py-4 font-semibold text-slate-700 dark:text-slate-300">{emp.department}</td>
+                  <td className="px-6 py-4 text-slate-600 dark:text-slate-400">{emp.designation}</td>
+                  <td className="px-6 py-4 font-bold text-slate-800 dark:text-slate-200 font-mono">
+                    {emp.gross_salary ? `₹${emp.gross_salary.toLocaleString('en-IN')}` : '—'}
+                  </td>
                   <td className="px-6 py-4">
                     <Badge variant={emp.status || 'Active'}>{emp.status || 'Active'}</Badge>
                   </td>
@@ -380,15 +382,15 @@ export function AdminDashboard() {
       >
         <form onSubmit={handleReviewSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
               Review Decision
             </label>
             <div className="flex gap-3">
               <label
                 className={`flex-1 flex items-center justify-center gap-2 p-3 rounded-xl border cursor-pointer font-bold text-xs ${
                   reviewAction === 'Approved'
-                    ? 'border-emerald-600 bg-emerald-50 text-emerald-800'
-                    : 'border-slate-200 text-slate-600'
+                    ? 'border-emerald-600 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300'
+                    : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400'
                 }`}
               >
                 <input
@@ -406,8 +408,8 @@ export function AdminDashboard() {
               <label
                 className={`flex-1 flex items-center justify-center gap-2 p-3 rounded-xl border cursor-pointer font-bold text-xs ${
                   reviewAction === 'Rejected'
-                    ? 'border-rose-600 bg-rose-50 text-rose-800'
-                    : 'border-slate-200 text-slate-600'
+                    ? 'border-rose-600 bg-rose-50 dark:bg-rose-950/60 text-rose-800 dark:text-rose-300'
+                    : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400'
                 }`}
               >
                 <input
@@ -425,7 +427,7 @@ export function AdminDashboard() {
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
               HR Review Remark (Visible to Employee)
             </label>
             <textarea
@@ -433,7 +435,7 @@ export function AdminDashboard() {
               value={adminRemark}
               onChange={(e) => setAdminRemark(e.target.value)}
               placeholder="Add remark or instructions for the employee..."
-              className="block w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className="block w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-750 focus:outline-none focus:ring-2 focus:ring-emerald-500"
             />
           </div>
 

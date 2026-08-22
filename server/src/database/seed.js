@@ -2,7 +2,7 @@ import bcrypt from 'bcryptjs';
 import db from '../config/db.js';
 
 export function seedDatabase() {
-  console.log('🌱 Starting Dayflow database seeding...');
+  console.log('🌱 Starting Dayflow database seeding (Indian Context)...');
 
   // Clear existing data cleanly in reverse order of foreign keys
   db.exec(`
@@ -27,85 +27,88 @@ export function seedDatabase() {
       email: 'admin@dayflow.com',
       passwordHash: adminPasswordHash,
       role: 'hr_admin',
-      firstName: 'Eleanor',
-      lastName: 'Vance',
+      firstName: 'Priya',
+      lastName: 'Sharma',
       avatarUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80',
-      phone: '+1 (415) 555-0100',
-      address: '742 Evergreen Terrace',
-      city: 'San Francisco',
-      state: 'CA',
-      zipCode: '94107',
-      emergencyName: 'Thomas Vance',
-      emergencyPhone: '+1 (415) 555-0199',
+      phone: '+91 98765 43210',
+      address: 'Prestige Ozone, Whitefield Main Road',
+      city: 'Bengaluru',
+      state: 'Karnataka',
+      country: 'India',
+      zipCode: '560066',
+      emergencyName: 'Rajesh Sharma',
+      emergencyPhone: '+91 98765 43299',
       emergencyRelation: 'Spouse',
-      dob: '1988-04-12',
+      dob: '1989-06-14',
       gender: 'Female',
       department: 'Human Resources',
       designation: 'Director of People & Culture',
-      doj: '2021-03-15',
+      doj: '2021-02-15',
       type: 'Full-Time',
       status: 'Active',
       manager: 'Executive Board',
-      location: 'HQ — San Francisco',
-      bio: 'Leading people operations, culture strategy, and talent development at Dayflow.',
-      basic: 9500,
-      hra: 3800,
-      conv: 400,
-      spec: 1200,
-      med: 300,
-      bank: 'Silicon Valley Bank',
-      acc: '**** **** 9281'
+      location: 'HQ — Electronic City, Bengaluru',
+      bio: 'Leading talent development, organizational culture, and HR tech operations across Dayflow India hubs.',
+      basic: 110000,
+      hra: 44000,
+      conv: 3000,
+      spec: 28000,
+      med: 2500,
+      bank: 'HDFC Bank',
+      acc: '**** **** 8291'
     },
     {
       empId: 'EMP-101',
-      email: 'alex@dayflow.com',
+      email: 'alex@dayflow.com', // Keep alex as alias for backward demo compatibility, displays as Aarav Patel
       passwordHash: employeePasswordHash,
       role: 'employee',
-      firstName: 'Alex',
-      lastName: 'Rivera',
+      firstName: 'Aarav',
+      lastName: 'Patel',
       avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
-      phone: '+1 (415) 555-0101',
-      address: '124 Market Street, Apt 4B',
-      city: 'San Francisco',
-      state: 'CA',
-      zipCode: '94105',
-      emergencyName: 'Maria Rivera',
-      emergencyPhone: '+1 (415) 555-0191',
+      phone: '+91 98111 22334',
+      address: 'Sobha Lavender, 24th Main, HSR Layout Sector 2',
+      city: 'Bengaluru',
+      state: 'Karnataka',
+      country: 'India',
+      zipCode: '560102',
+      emergencyName: 'Meera Patel',
+      emergencyPhone: '+91 98111 22399',
       emergencyRelation: 'Mother',
-      dob: '1993-08-22',
-      gender: 'Non-Binary',
+      dob: '1994-08-22',
+      gender: 'Male',
       department: 'Engineering',
-      designation: 'Senior Full Stack Engineer',
-      doj: '2022-06-01',
+      designation: 'Lead Full Stack Engineer',
+      doj: '2022-04-01',
       type: 'Full-Time',
       status: 'Active',
-      manager: 'Marcus Vance',
-      location: 'HQ — San Francisco',
-      bio: 'Full-stack builder passionate about scalable distributed systems and sleek UI/UX.',
-      basic: 8500,
-      hra: 3400,
-      conv: 400,
-      spec: 1000,
-      med: 300,
-      bank: 'Chase Bank',
+      manager: 'Priya Sharma',
+      location: 'HQ — Electronic City, Bengaluru',
+      bio: 'Passionate about building scalable distributed web architectures, high throughput APIs, and slick React interfaces.',
+      basic: 95000,
+      hra: 38000,
+      conv: 2400,
+      spec: 22000,
+      med: 2000,
+      bank: 'ICICI Bank',
       acc: '**** **** 4412'
     },
     {
       empId: 'EMP-102',
-      email: 'sarah@dayflow.com',
+      email: 'sarah@dayflow.com', // Displayed as Ananya Iyer
       passwordHash: employeePasswordHash,
       role: 'employee',
-      firstName: 'Sarah',
-      lastName: 'Chen',
+      firstName: 'Ananya',
+      lastName: 'Iyer',
       avatarUrl: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150&auto=format&fit=crop&q=80',
-      phone: '+1 (415) 555-0102',
-      address: '890 Mission St',
-      city: 'San Francisco',
-      state: 'CA',
-      zipCode: '94103',
-      emergencyName: 'David Chen',
-      emergencyPhone: '+1 (415) 555-0192',
-      emergencyRelation: 'Brother',
+      phone: '+91 98222 33445',
+      address: 'Lodha Park, Pandurang Budhkar Marg, Lower Parel',
+      city: 'Mumbai',
+      state: 'Maharashtra',
+      country: 'India',
+      zipCode: '400013',
+      emergencyName: 'Ramesh Iyer',
+      emergencyPhone: '+91 98222 33499',
+      emergencyRelation: 'Father',
       dob: '1995-11-04',
       gender: 'Female',
       department: 'Design',
@@ -113,102 +116,105 @@ export function seedDatabase() {
       doj: '2022-09-15',
       type: 'Full-Time',
       status: 'Active',
-      manager: 'Eleanor Vance',
-      location: 'HQ — San Francisco',
-      bio: 'Crafting intuitive digital experiences and design systems that delight users.',
-      basic: 8000,
-      hra: 3200,
-      conv: 400,
-      spec: 900,
-      med: 300,
-      bank: 'Bank of America',
+      manager: 'Priya Sharma',
+      location: 'Regional Hub — BKC, Mumbai',
+      bio: 'Crafting intuitive digital user journeys, atomic design systems, and delightful enterprise product experiences.',
+      basic: 90000,
+      hra: 36000,
+      conv: 2400,
+      spec: 18000,
+      med: 2000,
+      bank: 'HDFC Bank',
       acc: '**** **** 7731'
     },
     {
       empId: 'EMP-103',
-      email: 'marcus@dayflow.com',
+      email: 'marcus@dayflow.com', // Displayed as Vikram Singh
       passwordHash: employeePasswordHash,
       role: 'employee',
-      firstName: 'Marcus',
-      lastName: 'Vance',
+      firstName: 'Vikram',
+      lastName: 'Singh',
       avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
-      phone: '+1 (415) 555-0103',
-      address: '320 Pine Street',
-      city: 'San Francisco',
-      state: 'CA',
-      zipCode: '94104',
-      emergencyName: 'Laura Vance',
-      emergencyPhone: '+1 (415) 555-0193',
+      phone: '+91 98333 44556',
+      address: 'Aparna CyberLife, Nallagandla, Gachibowli',
+      city: 'Hyderabad',
+      state: 'Telangana',
+      country: 'India',
+      zipCode: '500019',
+      emergencyName: 'Pooja Singh',
+      emergencyPhone: '+91 98333 44599',
       emergencyRelation: 'Spouse',
-      dob: '1990-02-18',
+      dob: '1991-03-18',
       gender: 'Male',
       department: 'Infrastructure',
-      designation: 'Lead DevOps Engineer',
+      designation: 'Lead DevOps & Cloud Architect',
       doj: '2021-11-10',
       type: 'Full-Time',
       status: 'Active',
-      manager: 'Eleanor Vance',
-      location: 'HQ — San Francisco',
-      bio: 'Kubernetes, AWS cloud architecture, CI/CD observability fanatic.',
-      basic: 9000,
-      hra: 3600,
-      conv: 400,
-      spec: 1100,
-      med: 300,
-      bank: 'Wells Fargo',
+      manager: 'Priya Sharma',
+      location: 'Regional Hub — HITEC City, Hyderabad',
+      bio: 'Kubernetes orchestration, multi-region AWS cloud infra, CI/CD pipelines, and zero-downtime microservices.',
+      basic: 98000,
+      hra: 39200,
+      conv: 2400,
+      spec: 21000,
+      med: 2000,
+      bank: 'State Bank of India',
       acc: '**** **** 1190'
     },
     {
       empId: 'EMP-104',
-      email: 'priya@dayflow.com',
+      email: 'priya.sharma2@dayflow.com',
       passwordHash: employeePasswordHash,
       role: 'employee',
-      firstName: 'Priya',
-      lastName: 'Sharma',
+      firstName: 'Sneha',
+      lastName: 'Reddy',
       avatarUrl: 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=150&auto=format&fit=crop&q=80',
-      phone: '+1 (415) 555-0104',
-      address: '505 Howard St',
-      city: 'San Francisco',
-      state: 'CA',
-      zipCode: '94105',
-      emergencyName: 'Raj Sharma',
-      emergencyPhone: '+1 (415) 555-0194',
-      emergencyRelation: 'Father',
-      dob: '1992-05-30',
+      phone: '+91 98444 55667',
+      address: 'Brigade Gateway, Malleshwaram West',
+      city: 'Bengaluru',
+      state: 'Karnataka',
+      country: 'India',
+      zipCode: '560055',
+      emergencyName: 'Kavita Reddy',
+      emergencyPhone: '+91 98444 55699',
+      emergencyRelation: 'Mother',
+      dob: '1993-05-30',
       gender: 'Female',
       department: 'Marketing',
       designation: 'VP of Growth & Marketing',
       doj: '2023-01-10',
       type: 'Full-Time',
       status: 'Active',
-      manager: 'Eleanor Vance',
-      location: 'HQ — San Francisco',
-      bio: 'Scaling SaaS user acquisition, brand positioning, and lifecycle marketing campaigns.',
-      basic: 8800,
-      hra: 3520,
-      conv: 400,
-      spec: 1000,
-      med: 300,
-      bank: 'Chase Bank',
+      manager: 'Priya Sharma',
+      location: 'HQ — Electronic City, Bengaluru',
+      bio: 'Scaling B2B SaaS user acquisition, brand strategy, demand generation, and lifecycle retention campaigns.',
+      basic: 92000,
+      hra: 36800,
+      conv: 2400,
+      spec: 19000,
+      med: 2000,
+      bank: 'Axis Bank',
       acc: '**** **** 6534'
     },
     {
       empId: 'EMP-105',
-      email: 'james@dayflow.com',
+      email: 'rohan@dayflow.com',
       passwordHash: employeePasswordHash,
       role: 'employee',
-      firstName: 'James',
-      lastName: 'Wilson',
+      firstName: 'Rohan',
+      lastName: 'Deshmukh',
       avatarUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80',
-      phone: '+1 (415) 555-0105',
-      address: '224 2nd Avenue',
-      city: 'San Francisco',
-      state: 'CA',
-      zipCode: '94118',
-      emergencyName: 'Karen Wilson',
-      emergencyPhone: '+1 (415) 555-0195',
+      phone: '+91 98555 66778',
+      address: 'Rohan Mithila, Viman Nagar',
+      city: 'Pune',
+      state: 'Maharashtra',
+      country: 'India',
+      zipCode: '411014',
+      emergencyName: 'Sunita Deshmukh',
+      emergencyPhone: '+91 98555 66799',
       emergencyRelation: 'Spouse',
-      dob: '1991-07-14',
+      dob: '1992-07-14',
       gender: 'Male',
       department: 'Sales',
       designation: 'Enterprise Account Executive',
@@ -216,141 +222,189 @@ export function seedDatabase() {
       type: 'Full-Time',
       status: 'Active',
       manager: 'Priya Sharma',
-      location: 'HQ — San Francisco',
-      bio: 'Building enterprise relationships and driving HRMS tech transformation across Fortune 500s.',
-      basic: 7500,
-      hra: 3000,
-      conv: 400,
-      spec: 800,
-      med: 300,
-      bank: 'Citibank',
+      location: 'Regional Hub — Viman Nagar, Pune',
+      bio: 'Building enterprise relationships and driving HRMS digital transformation across Indian unicorns and conglomerates.',
+      basic: 82000,
+      hra: 32800,
+      conv: 2000,
+      spec: 15000,
+      med: 1800,
+      bank: 'Kotak Mahindra Bank',
       acc: '**** **** 3321'
     },
     {
       empId: 'EMP-106',
-      email: 'emily@dayflow.com',
+      email: 'neha@dayflow.com',
       passwordHash: employeePasswordHash,
       role: 'employee',
-      firstName: 'Emily',
-      lastName: 'Taylor',
+      firstName: 'Neha',
+      lastName: 'Gupta',
       avatarUrl: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&auto=format&fit=crop&q=80',
-      phone: '+1 (415) 555-0106',
-      address: '150 Castro St',
-      city: 'Mountain View',
-      state: 'CA',
-      zipCode: '94041',
-      emergencyName: 'Robert Taylor',
-      emergencyPhone: '+1 (415) 555-0196',
+      phone: '+91 98666 77889',
+      address: 'DLF The Crest, Sector 54, Golf Course Road',
+      city: 'Gurugram',
+      state: 'Haryana',
+      country: 'India',
+      zipCode: '122002',
+      emergencyName: 'Alok Gupta',
+      emergencyPhone: '+91 98666 77899',
       emergencyRelation: 'Father',
       dob: '1996-03-25',
       gender: 'Female',
       department: 'Engineering',
-      designation: 'QA & Test Automation Lead',
+      designation: 'Lead QA & Automation Engineer',
       doj: '2023-08-15',
       type: 'Full-Time',
       status: 'Active',
-      manager: 'Marcus Vance',
-      location: 'Remote (California)',
-      bio: 'Ensuring bulletproof reliability, Cypress/Playwright test suites, and top tier software quality.',
-      basic: 7200,
-      hra: 2880,
-      conv: 400,
-      spec: 700,
-      med: 300,
-      bank: 'Chase Bank',
-      acc: '**** **** 8820'
+      manager: 'Aarav Patel',
+      location: 'Regional Hub — Cyber City, Gurugram',
+      bio: 'End-to-end test automation specialist ensuring highest reliability, performance SLAs, and bulletproof releases.',
+      basic: 78000,
+      hra: 31200,
+      conv: 2000,
+      spec: 14000,
+      med: 1800,
+      bank: 'HDFC Bank',
+      acc: '**** **** 9087'
     },
     {
       empId: 'EMP-107',
-      email: 'carlos@dayflow.com',
+      email: 'aditya@dayflow.com',
       passwordHash: employeePasswordHash,
       role: 'employee',
-      firstName: 'Carlos',
-      lastName: 'Gomez',
-      avatarUrl: 'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=150&auto=format&fit=crop&q=80',
-      phone: '+1 (415) 555-0107',
-      address: '610 Broadway',
-      city: 'Oakland',
-      state: 'CA',
-      zipCode: '94607',
-      emergencyName: 'Elena Gomez',
-      emergencyPhone: '+1 (415) 555-0197',
-      emergencyRelation: 'Sister',
-      dob: '1994-10-10',
+      firstName: 'Aditya',
+      lastName: 'Verma',
+      avatarUrl: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=150&auto=format&fit=crop&q=80',
+      phone: '+91 98777 88990',
+      address: 'Olympia Opaline, Navalur, OMR',
+      city: 'Chennai',
+      state: 'Tamil Nadu',
+      country: 'India',
+      zipCode: '600130',
+      emergencyName: 'Sanjay Verma',
+      emergencyPhone: '+91 98777 88999',
+      emergencyRelation: 'Brother',
+      dob: '1997-12-10',
       gender: 'Male',
-      department: 'Operations',
-      designation: 'Customer Success Lead',
-      doj: '2023-11-01',
+      department: 'Engineering',
+      designation: 'Data & AI Engineer',
+      doj: '2024-01-15',
       type: 'Full-Time',
       status: 'Active',
-      manager: 'Eleanor Vance',
-      location: 'HQ — San Francisco',
-      bio: 'Empowering customers to achieve their operational goals with world-class support.',
-      basic: 6800,
-      hra: 2720,
-      conv: 400,
-      spec: 600,
-      med: 300,
-      bank: 'Bank of America',
-      acc: '**** **** 5592'
+      manager: 'Aarav Patel',
+      location: 'Regional Hub — Guindy, Chennai',
+      bio: 'Building machine learning pipelines, HR analytics models, and intelligent automated workflows.',
+      basic: 74000,
+      hra: 29600,
+      conv: 2000,
+      spec: 13000,
+      med: 1800,
+      bank: 'State Bank of India',
+      acc: '**** **** 5521'
+    },
+    {
+      empId: 'EMP-108',
+      email: 'pooja@dayflow.com',
+      passwordHash: employeePasswordHash,
+      role: 'employee',
+      firstName: 'Pooja',
+      lastName: 'Nair',
+      avatarUrl: 'https://images.unsplash.com/photo-1567532939604-b6b5b0db2604?w=150&auto=format&fit=crop&q=80',
+      phone: '+91 98888 99001',
+      address: 'Purva Riviera, Marathahalli',
+      city: 'Bengaluru',
+      state: 'Karnataka',
+      country: 'India',
+      zipCode: '560037',
+      emergencyName: 'Deepak Nair',
+      emergencyPhone: '+91 98888 99099',
+      emergencyRelation: 'Spouse',
+      dob: '1995-09-18',
+      gender: 'Female',
+      department: 'Human Resources',
+      designation: 'HR Operations Specialist',
+      doj: '2023-06-01',
+      type: 'Full-Time',
+      status: 'Active',
+      manager: 'Priya Sharma',
+      location: 'HQ — Electronic City, Bengaluru',
+      bio: 'Facilitating employee onboarding, statutory compliance, payroll coordination, and employee engagement programs.',
+      basic: 68000,
+      hra: 27200,
+      conv: 2000,
+      spec: 12000,
+      med: 1800,
+      bank: 'ICICI Bank',
+      acc: '**** **** 1289'
     }
   ];
 
-  const currentYear = new Date().getFullYear();
+  const insertUser = db.prepare(`
+    INSERT INTO users (employee_id, email, password_hash, role, is_verified, created_at)
+    VALUES (?, ?, ?, ?, 1, CURRENT_TIMESTAMP)
+  `);
+
+  const insertProfile = db.prepare(`
+    INSERT INTO employee_profiles (
+      user_id, first_name, last_name, avatar_url, phone, address, city, state, country, zip_code,
+      emergency_contact_name, emergency_contact_phone, emergency_contact_relation,
+      date_of_birth, gender, department, designation, date_of_joining,
+      employment_type, status, reporting_manager, work_location, bio
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `);
+
+  const insertSalary = db.prepare(`
+    INSERT INTO salary_structures (
+      user_id, currency, basic_salary, hra, conveyance_allowance, special_allowance,
+      medical_allowance, provident_fund, professional_tax, health_insurance,
+      gross_salary, total_deductions, net_salary, effective_date, payment_method, bank_name, account_number
+    ) VALUES (?, 'INR', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, DATE('now', '-6 months'), 'NEFT / Direct Bank Transfer', ?, ?)
+  `);
+
+  const insertLeaveBalance = db.prepare(`
+    INSERT INTO leave_balances (
+      user_id, year, paid_leave_total, paid_leave_used, sick_leave_total, sick_leave_used, casual_leave_total, casual_leave_used, unpaid_leave_used
+    ) VALUES (?, ?, 18, ?, 10, ?, 8, ?, 0)
+  `);
+
   const createdUserIds = [];
 
-  // Insert Users, Profiles, Salary Structures, Leave Balances
   for (const u of usersData) {
-    const userRes = db.prepare(`
-      INSERT INTO users (employee_id, email, password_hash, role, is_verified)
-      VALUES (?, ?, ?, ?, 1)
-    `).run(u.empId, u.email, u.passwordHash, u.role);
-
+    const userRes = insertUser.run(u.empId, u.email, u.passwordHash, u.role);
     const userId = userRes.lastInsertRowid;
     createdUserIds.push({ id: userId, ...u });
 
-    db.prepare(`
-      INSERT INTO employee_profiles (
-        user_id, first_name, last_name, avatar_url, phone,
-        address, city, state, zip_code,
-        emergency_contact_name, emergency_contact_phone, emergency_contact_relation,
-        date_of_birth, gender, department, designation, date_of_joining,
-        employment_type, status, reporting_manager, work_location, bio
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `).run(
-      userId, u.firstName, u.lastName, u.avatarUrl, u.phone,
-      u.address, u.city, u.state, u.zipCode,
+    insertProfile.run(
+      userId, u.firstName, u.lastName, u.avatarUrl, u.phone, u.address, u.city, u.state, u.country || 'India', u.zipCode,
       u.emergencyName, u.emergencyPhone, u.emergencyRelation,
       u.dob, u.gender, u.department, u.designation, u.doj,
       u.type, u.status, u.manager, u.location, u.bio
     );
 
-    // Salary Structure
+    // Standard Indian compensation components
     const gross = u.basic + u.hra + u.conv + u.spec + u.med;
-    const pf = Math.round(u.basic * 0.12);
-    const tax = Math.round(gross * 0.12);
-    const ins = 150;
-    const totalDeductions = pf + tax + ins;
+    const pf = Math.round(u.basic * 0.12); // EPF @ 12% of basic
+    const pt = 200; // Professional Tax standard ₹200/mo
+    const tax = Math.round(gross * 0.10); // Standard TDS estimate ~10%
+    const healthIns = 750; // Group Health Insurance premium
+    const totalDeductions = pf + pt + tax + healthIns;
     const net = gross - totalDeductions;
 
-    db.prepare(`
-      INSERT INTO salary_structures (
-        user_id, currency, basic_salary, hra, conveyance_allowance, special_allowance,
-        medical_allowance, provident_fund, professional_tax, health_insurance,
-        gross_salary, total_deductions, net_salary, bank_name, account_number
-      ) VALUES (?, 'USD', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `).run(userId, u.basic, u.hra, u.conv, u.spec, u.med, pf, tax, ins, gross, totalDeductions, net, u.bank, u.acc);
+    insertSalary.run(
+      userId, u.basic, u.hra, u.conv, u.spec,
+      u.med, pf, pt, healthIns,
+      gross, totalDeductions, net, u.bank, u.acc
+    );
 
-    // Leave Balances
-    db.prepare(`
-      INSERT INTO leave_balances (
-        user_id, year, paid_leave_total, paid_leave_used,
-        sick_leave_total, sick_leave_used, casual_leave_total, casual_leave_used
-      ) VALUES (?, ?, 18, 3, 10, 2, 8, 1)
-    `).run(userId, currentYear);
+    const currentYear = new Date().getFullYear();
+    const paidUsed = Math.floor(Math.random() * 5);
+    const sickUsed = Math.floor(Math.random() * 3);
+    const casualUsed = Math.floor(Math.random() * 2);
+
+    insertLeaveBalance.run(userId, currentYear, paidUsed, sickUsed, casualUsed);
   }
 
-  console.log(`✅ Seeded ${createdUserIds.length} users with profiles & salary structures.`);
+  console.log(`✅ Seeded ${createdUserIds.length} Indian employee profiles & salary structures.`);
 
   // Generate 30 days of attendance history for each user
   const today = new Date();
@@ -370,57 +424,50 @@ export function seedDatabase() {
     if (dayOfWeek === 0 || dayOfWeek === 6) continue;
 
     for (const u of createdUserIds) {
-      // Is today?
       if (d === 0) {
-        // For today: check in most users, leave a couple pending for interactive testing
+        // Today's attendance
         if (u.empId === 'EMP-101' || u.empId === 'EMP-001' || u.empId === 'EMP-102' || u.empId === 'EMP-103') {
-          insertAttendance.run(u.id, dateStr, '09:05:22', null, 0, 'Present', 'Checked in via Web Portal');
+          insertAttendance.run(u.id, dateStr, '09:12:18', null, 0, 'Present', 'Checked in via Dayflow Web Portal');
         } else if (u.empId === 'EMP-104') {
-          insertAttendance.run(u.id, dateStr, '09:42:15', null, 0, 'Late', 'Traffic delay on Bay Bridge');
+          insertAttendance.run(u.id, dateStr, '09:48:30', null, 0, 'Late', 'Silk Board junction traffic delay');
         }
         continue;
       }
 
-      // Past days
-      // Randomize attendance pattern (mostly present, occasional late, occasional leave)
       const rand = Math.random();
       let inTime, outTime, duration, status, notes;
 
-      if (rand < 0.85) {
-        // Regular Present (8:50 AM - 9:15 AM check in, 5:30 PM - 6:15 PM check out)
-        const inMins = Math.floor(Math.random() * 25) + 50; // 8:50 to 9:15
+      if (rand < 0.86) {
+        const inMins = Math.floor(Math.random() * 25) + 50; // 8:50 to 9:15 AM
         const inHour = inMins >= 60 ? 9 : 8;
         const inMin = inMins % 60;
         inTime = `${String(inHour).padStart(2, '0')}:${String(inMin).padStart(2, '0')}:00`;
 
-        const outHour = 17 + Math.floor(Math.random() * 2);
+        const outHour = 18 + Math.floor(Math.random() * 2);
         const outMin = Math.floor(Math.random() * 59);
         outTime = `${String(outHour).padStart(2, '0')}:${String(outMin).padStart(2, '0')}:00`;
 
         duration = (outHour * 60 + outMin) - (inHour * 60 + inMin);
         status = 'Present';
-        notes = 'Regular work shift completed.';
-      } else if (rand < 0.92) {
-        // Late arrival
-        inTime = '09:45:10';
-        outTime = '18:30:00';
-        duration = 525;
+        notes = 'Standard shift completed.';
+      } else if (rand < 0.93) {
+        inTime = '09:50:15';
+        outTime = '18:45:00';
+        duration = 535;
         status = 'Late';
-        notes = 'Transit delay / Late check-in recorded.';
+        notes = 'Metro train delay / Late check-in.';
       } else if (rand < 0.96) {
-        // Half-day
         inTime = '09:00:00';
-        outTime = '13:00:00';
-        duration = 240;
+        outTime = '13:30:00';
+        duration = 270;
         status = 'Half-day';
-        notes = 'Medical appointment afternoon.';
+        notes = 'First half present / personal half-day.';
       } else {
-        // On Leave
         inTime = null;
         outTime = null;
         duration = 0;
         status = 'On Leave';
-        notes = 'Approved PTO';
+        notes = 'Approved Leave';
       }
 
       insertAttendance.run(u.id, dateStr, inTime, outTime, duration, status, notes);
@@ -431,10 +478,10 @@ export function seedDatabase() {
 
   // Seed Leave Requests
   const adminUser = createdUserIds.find(u => u.role === 'hr_admin');
-  const alexUser = createdUserIds.find(u => u.empId === 'EMP-101');
-  const sarahUser = createdUserIds.find(u => u.empId === 'EMP-102');
-  const marcusUser = createdUserIds.find(u => u.empId === 'EMP-103');
-  const priyaUser = createdUserIds.find(u => u.empId === 'EMP-104');
+  const aaravUser = createdUserIds.find(u => u.empId === 'EMP-101');
+  const ananyaUser = createdUserIds.find(u => u.empId === 'EMP-102');
+  const vikramUser = createdUserIds.find(u => u.empId === 'EMP-103');
+  const snehaUser = createdUserIds.find(u => u.empId === 'EMP-104');
 
   const insertLeave = db.prepare(`
     INSERT INTO leave_requests (
@@ -443,49 +490,49 @@ export function seedDatabase() {
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
 
-  // Pending leaves for admin to review right away!
+  // Pending leaves for admin to review
   insertLeave.run(
-    alexUser.id, 'Paid', '2026-09-01', '2026-09-04', 4, 0,
-    'Annual family vacation to Lake Tahoe.', 'Pending', null, null, null
+    aaravUser.id, 'Paid', '2026-09-02', '2026-09-05', 4, 0,
+    'Family trip to Coorg & Wayanad.', 'Pending', null, null, null
   );
 
   insertLeave.run(
-    sarahUser.id, 'Sick', '2026-08-28', '2026-08-29', 2, 0,
-    'Dental surgery and post-op recovery.', 'Pending', null, null, null
+    ananyaUser.id, 'Sick', '2026-08-28', '2026-08-29', 2, 0,
+    'Dental surgery and post-procedure rest.', 'Pending', null, null, null
   );
 
   insertLeave.run(
-    marcusUser.id, 'Casual', '2026-09-12', '2026-09-12', 1, 0,
-    'Personal errand / DMV appointment.', 'Pending', null, null, null
+    vikramUser.id, 'Casual', '2026-09-15', '2026-09-15', 1, 0,
+    'Regional RTO driving license renewal appointment.', 'Pending', null, null, null
   );
 
   // Approved past leaves
   insertLeave.run(
-    alexUser.id, 'Paid', '2026-07-10', '2026-07-12', 3, 0,
-    'Summer hiking trip.', 'Approved', adminUser.id, 'Have a wonderful vacation!', '2026-07-02 10:30:00'
+    aaravUser.id, 'Paid', '2026-07-15', '2026-07-18', 4, 0,
+    'Monsoon trek to Western Ghats.', 'Approved', adminUser.id, 'Approved! Enjoy your trek.', '2026-07-08 11:30:00'
   );
 
   insertLeave.run(
-    priyaUser.id, 'Paid', '2026-08-01', '2026-08-03', 3, 0,
-    'Attending tech marketing summit.', 'Approved', adminUser.id, 'Approved. Enjoy the conference!', '2026-07-28 14:15:00'
+    snehaUser.id, 'Paid', '2026-08-03', '2026-08-05', 3, 0,
+    'Attending B2B SaaS India Summit in Bengaluru.', 'Approved', adminUser.id, 'Approved. Please share key learnings with team!', '2026-07-29 15:20:00'
   );
 
   // Rejected leave
   insertLeave.run(
-    alexUser.id, 'Casual', '2026-06-20', '2026-06-20', 1, 0,
-    'Impressionist art exhibition.', 'Rejected', adminUser.id, 'Critical sprint launch date on June 20th. Please reschedule.', '2026-06-18 16:00:00'
+    aaravUser.id, 'Casual', '2026-06-25', '2026-06-25', 1, 0,
+    'Music concert in Mumbai.', 'Rejected', adminUser.id, 'Major sprint production release scheduled on June 25th.', '2026-06-21 16:00:00'
   );
 
   console.log('✅ Seeded Pending, Approved, and Rejected leave requests.');
 
-  // Seed Monthly Payroll Records (last 3 months: June, July, August 2026)
+  // Seed Monthly Payroll Records (last 3 months: June, July, August 2026) in INR
   const insertPayroll = db.prepare(`
     INSERT INTO payroll_records (
       user_id, payslip_number, month, year,
       basic_pay, hra, allowances, gross_pay,
-      tax_deduction, pf_deduction, insurance_deduction, total_deductions,
+      tax_deduction, pf_deduction, insurance_deduction, other_deductions, total_deductions,
       net_pay, payment_status, payment_date, notes
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Paid', ?, ?)
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Paid', ?, ?)
   `);
 
   const months = [
@@ -498,9 +545,10 @@ export function seedDatabase() {
     const gross = u.basic + u.hra + u.conv + u.spec + u.med;
     const allowances = u.conv + u.spec + u.med;
     const pf = Math.round(u.basic * 0.12);
-    const tax = Math.round(gross * 0.12);
-    const ins = 150;
-    const totalDeductions = pf + tax + ins;
+    const pt = 200;
+    const tax = Math.round(gross * 0.10);
+    const ins = 750;
+    const totalDeductions = pf + pt + tax + ins;
     const net = gross - totalDeductions;
 
     for (const mon of months) {
@@ -508,13 +556,13 @@ export function seedDatabase() {
       insertPayroll.run(
         u.id, payslipNo, mon.m, mon.y,
         u.basic, u.hra, allowances, gross,
-        tax, pf, ins, totalDeductions,
-        net, mon.date, `Salary credited via Direct Deposit to ${u.bank}`
+        tax, pf, ins, pt, totalDeductions,
+        net, mon.date, `Salary credited via NEFT/IMPS to ${u.bank}`
       );
     }
   }
 
-  console.log('✅ Seeded 3 months of payroll slips for all employees.');
+  console.log('✅ Seeded 3 months of INR payroll slips for all employees.');
 
   // Seed Notifications
   const insertNotif = db.prepare(`
@@ -522,53 +570,59 @@ export function seedDatabase() {
     VALUES (?, ?, ?, ?, ?, ?)
   `);
 
-  // Notifications for Alex
-  insertNotif.run(alexUser.id, 'Welcome to Dayflow!', 'Explore your personal dashboard, attendance clock, and leave balances.', 'system', '/dashboard', 1);
-  insertNotif.run(alexUser.id, 'Salary Slip Ready', 'Your payslip for August 2026 has been generated and is available for download.', 'payroll', '/payroll', 0);
-  insertNotif.run(alexUser.id, 'Leave Request Update', 'Your Paid leave request for July 10 - July 12 was approved by HR.', 'leave', '/leaves', 1);
+  insertNotif.run(aaravUser.id, 'Welcome to Dayflow!', 'Explore your personal dashboard, attendance clock, leave balances, and salary structure in ₹ INR.', 'system', '/dashboard', 1);
+  insertNotif.run(aaravUser.id, 'August 2026 Payslip Ready', 'Your salary slip for August 2026 has been generated and is ready for download in INR (₹).', 'payroll', '/payroll', 0);
+  insertNotif.run(aaravUser.id, 'Leave Request Approved', 'Your Paid leave request for July 15 - July 18 was approved by HR.', 'leave', '/leaves', 1);
 
-  // Notifications for Admin
-  insertNotif.run(adminUser.id, 'New Leave Request', 'Alex Rivera requested 4 days of Paid Leave (Sep 1 - Sep 4).', 'leave', '/admin/leaves', 0);
-  insertNotif.run(adminUser.id, 'New Leave Request', 'Sarah Chen requested 2 days of Sick Leave (Aug 28 - Aug 29).', 'leave', '/admin/leaves', 0);
-  insertNotif.run(adminUser.id, 'System Status', 'All automated attendance logs synchronized successfully.', 'system', '/admin/attendance', 1);
+  insertNotif.run(adminUser.id, 'New Leave Application', 'Aarav Patel applied for 4 days of Paid Leave (Sep 2 - Sep 5).', 'leave', '/admin/leaves', 0);
+  insertNotif.run(adminUser.id, 'New Leave Application', 'Ananya Iyer applied for 2 days of Sick Leave (Aug 28 - Aug 29).', 'leave', '/admin/leaves', 0);
+  insertNotif.run(adminUser.id, 'Automated Attendance Sync', 'All biometric & web attendance logs synced across Bengaluru, Mumbai, and Hyderabad offices.', 'system', '/admin/attendance', 1);
 
-  // Seed Announcements
+  // Seed Announcements (Indian Context)
   const insertAnnouncement = db.prepare(`
     INSERT INTO announcements (title, content, category, is_pinned, author_name)
     VALUES (?, ?, ?, ?, ?)
   `);
 
   insertAnnouncement.run(
-    '🎉 Dayflow Q3 Company All-Hands & Product Demo',
-    'Join us this Friday at 3:00 PM PST for our quarterly town hall, product roadmap unveil, and employee spot bonus recognitions! Refreshments served in the 4th floor lounge.',
-    'Events', 1, 'Eleanor Vance'
+    '🪔 Grand Diwali Celebrations & Annual Bonus Disbursal',
+    'Dayflow will celebrate Diwali with a traditional festive lunch, ethnic wear day, and exciting team games on Friday, Oct 30 at all our offices (Bengaluru, Mumbai, Hyderabad, Gurugram, Pune, Chennai). Annual festive bonuses will be credited with October payroll!',
+    'Festivals', 1, 'Priya Sharma'
   );
 
   insertAnnouncement.run(
-    '🌴 Upcoming Company Wellness Holiday — Labor Day',
-    'Reminder that our offices will be closed on Monday, September 1st in observance of Labor Day. All essential systems will be monitored on on-call rotation.',
-    'Holiday', 1, 'Human Resources'
+    '🇮🇳 Independence Day Holiday & Flag Hoisting Ceremony',
+    'In commemoration of Independence Day, all Dayflow offices will remain closed on Friday, August 15th. We invite team members and families in Bengaluru HQ for the morning flag hoisting and cultural program.',
+    'Holiday', 1, 'People Operations'
   );
 
   insertAnnouncement.run(
-    '💡 Annual Health & Wellness Benefit Enrollment',
-    'Open enrollment for next fiscal year healthcare, dental, and gym reimbursement benefits is now open. Submit your selections by end of month in the documents section.',
-    'Benefits', 0, 'People Operations'
+    '⚡ Dayflow Annual Tech Summit & Hackathon 2026',
+    'Registrations are open for our 36-hour internal hackathon in Bengaluru! Teams will build cutting-edge generative AI and workforce productivity features. Exciting cash prizes and trophies to be won!',
+    'Engineering', 0, 'Aarav Patel'
   );
 
-  // Seed Documents
+  insertAnnouncement.run(
+    '🏥 Annual Group Health Insurance & Wellness Enrollment',
+    'Enrollment for the company-sponsored ₹10 Lakhs floater health insurance (covering employee, spouse, children, and dependent parents) is now open. Upload your dependent KYC documents in your profile.',
+    'Benefits', 0, 'Human Resources'
+  );
+
+  // Seed Documents (Indian Statutory & Corporate Documents)
   const insertDoc = db.prepare(`
     INSERT INTO documents (user_id, title, doc_type, file_name, file_size, file_url)
     VALUES (?, ?, ?, ?, ?, ?)
   `);
 
   for (const u of createdUserIds) {
-    insertDoc.run(u.id, 'Official Employment Agreement', 'Offer Letter', `${u.empId}_Employment_Agreement.pdf`, '1.8 MB', '/docs/sample_employment_agreement.pdf');
-    insertDoc.run(u.id, 'Government ID Proof', 'ID Proof', `${u.empId}_Passport_Copy.pdf`, '2.4 MB', '/docs/sample_passport.pdf');
-    insertDoc.run(u.id, 'Federal Tax Withholding W-4', 'Tax Form', `${u.empId}_W4_Form.pdf`, '620 KB', '/docs/sample_w4.pdf');
+    insertDoc.run(u.id, 'Official Appointment Letter', 'Offer Letter', `${u.empId}_Appointment_Letter.pdf`, '1.4 MB', '/docs/sample_appointment_letter.pdf');
+    insertDoc.run(u.id, 'Aadhaar Card (Govt ID Proof)', 'ID Proof', `${u.empId}_Aadhaar_Card.pdf`, '1.1 MB', '/docs/sample_aadhaar.pdf');
+    insertDoc.run(u.id, 'Permanent Account Number (PAN Card)', 'Tax Form', `${u.empId}_PAN_Card.pdf`, '850 KB', '/docs/sample_pan.pdf');
+    insertDoc.run(u.id, 'Form 16 TDS Certificate (FY 2025-26)', 'Tax Form', `${u.empId}_Form16.pdf`, '1.9 MB', '/docs/sample_form16.pdf');
+    insertDoc.run(u.id, 'Highest Educational Degree Certificate', 'Certificate', `${u.empId}_Degree_Certificate.pdf`, '2.2 MB', '/docs/sample_degree.pdf');
   }
 
-  console.log('✅ Dayflow HRMS database seeded successfully!');
+  console.log('✅ Dayflow HRMS database seeded successfully with Indian context!');
 }
 
 // Execute seed directly if called as a script
